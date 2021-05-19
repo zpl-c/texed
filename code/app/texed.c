@@ -215,6 +215,11 @@ int main(int argc, char **argv) {
         return -1;
     }
     
+    // NOTE(zaklaus): create dirs if they don't exist yet
+    {
+        zpl_path_mkdir_recursive("art/gen", 0660);
+    }
+    
     if (zpl_opts_has_arg(&opts, "texed-import")) {
         zpl_string path = zpl_opts_string(&opts, "texed-import", "");
         if (FileExists(zpl_bprintf("art/%s", path)) && IsFileExtension(path, ".png")) {

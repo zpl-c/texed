@@ -190,11 +190,12 @@ static td_op default_ops[] = {
     },{
         OP(TOP_IMAGE_CELLULAR),
         .cat = TCAT_GEN,
-        PARAMS(4) {
+        PARAMS(5) {
             PARAM(TPARAM_COORD, "seed", "1"),
             PARAM(TPARAM_COORD, "tile_size", "16"),
             PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
             PARAM(TPARAM_COLOR, "color2", "ffffffff"),
+            PARAM(TPARAM_SLIDER, "cell_offset", "0.0"),
         }
     }
 };
@@ -203,7 +204,7 @@ static td_op default_ops[] = {
 
 static tcat_desc default_cats[] = {
     {.kind = TCAT_STACK, .icon = "#197#", .color = RED},
-    {.kind = TCAT_GEN, .icon = "#197#", .color = BLUE},
-    {.kind = TCAT_DRAW, .icon = "#197#", .color = GREEN},
-    {.kind = TCAT_MOD, .icon = "#197#", .color = ORANGE},
+    {.kind = TCAT_GEN, .icon = "#125#", .color = BLUE},
+    {.kind = TCAT_DRAW, .icon = "#23#", .color = GREEN},
+    {.kind = TCAT_MOD, .icon = "#25#", .color = ORANGE},
 };

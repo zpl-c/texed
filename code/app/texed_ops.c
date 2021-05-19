@@ -5,7 +5,7 @@ static inline
 Image texed_generate_noise(uint32_t seed, int width, int height, float factor, Color color1, Color color2);
 
 static inline
-Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2);
+Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2, float cell_offset);
 
 static inline
 Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, float scale, Color color1, Color color2);
@@ -237,7 +237,8 @@ void texed_process_ops(void) {
                                                     w, h, 
                                                     op->params[1].i32,
                                                     op->params[2].color,
-                                                    op->params[3].color);
+                                                    op->params[3].color,
+                                                    op->params[4].flt*20.0f);
                 Rectangle rec = {0, 0, w, h};
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);
@@ -335,7 +336,7 @@ Image texed_generate_noise(uint32_t seed, int width, int height, float factor, C
 }
 
 static inline
-Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2)
+Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2, float cell_offset)
 {
     Color *pixels = (Color *)RL_MALLOC(width*height*sizeof(Color));
     
@@ -378,11 +379,12 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
                 }
             }
             
-            // I made this up but it seems to give good results at all tile sizes
-            int intensity = (int)(minDistance*256.0f/tileSize);
-            if (intensity > 255) intensity = 255;
+            minDistance = zpl_max(cell_offset, minDistance);
             
-            pixels[y*width + x] = ColorLerp(color1, color2, (float)intensity/255.0f);;
+            float intensity = (minDistance-cell_offset)/(float)tileSize;
+            //if (intensity > 255) intensity = 255;
+            
+            pixels[y*width + x] = ColorLerp(color1, color2, (float)intensity);
         }
     }
     
