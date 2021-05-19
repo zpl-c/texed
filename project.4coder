@@ -1,0 +1,67 @@
+version(1);
+
+project_name = "texed";
+
+patterns =
+{
+    "*.c",
+    "*.cpp",
+    "*.jai",
+    "*.odin",
+    "*.zig",
+    "*.h",
+    "*.inc",
+    "*.bat",
+    "*.sh",
+    "*.4coder",
+    "*.txt",
+    "*.cmake",
+};
+
+blacklist_patterns =
+{
+    ".*",
+};
+
+load_paths =
+{
+    {{
+        { ".", .recursive = false, .relative = true },
+        { "code/app", .recursive = true, .relative = true },
+        { "code/vendors", .recursive = true, .relative = true },
+        { "cmake", .recursive = true, .relative = true },
+        { "build/_deps/raylib-src/src", .recursive = true, .relative = true }
+    }, .os = "win"}
+};
+
+command_list =
+{
+    
+    {
+        .name = "build",
+        .out = "*compilation*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd =
+        {
+            { "cmake --build build", .os = "win" },
+        },
+    },
+    
+    {
+        .name = "run",
+        .out = "*console*",
+        .footer_panel = false,
+        .save_dirty_files = true,
+        .cursor_at_end = true,
+        .cmd =
+        {
+            { "run.bat", .os = "win" },
+        },
+    },
+    
+};
+
+fkey_command[1] = "build";
+fkey_command[2] = "run";
