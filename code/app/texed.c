@@ -261,7 +261,7 @@ int main(int argc, char **argv) {
         return 0;
     }
     
-    InitWindow(screenWidth, screenHeight, "texed: stack-based texture editor");
+    InitWindow(screenWidth, screenHeight, "zpl.texed: stack-based texture generation tool");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
     
