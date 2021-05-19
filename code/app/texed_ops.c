@@ -2,10 +2,13 @@ static inline
 float texed_map_value(float v, float min, float max);
 
 static inline
-Image texed_generate_noise(uint32_t seed, int width, int height, float factor);
+Image texed_generate_noise(uint32_t seed, int width, int height, float factor, Color color1, Color color2);
 
 static inline
-Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize);
+Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2);
+
+static inline
+Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, float scale, Color color1, Color color2);
 
 void texed_process_ops(void) {
     for (int i = 0; i <= ctx.img_pos; i+=1)
@@ -205,7 +208,9 @@ void texed_process_ops(void) {
                 int h = dst->height;
                 Image img = texed_generate_noise(op->params[0].u32, 
                                                  w, h, 
-                                                 op->params[1].flt);
+                                                 op->params[1].flt,
+                                                 op->params[2].color,
+                                                 op->params[3].color);
                 Rectangle rec = {0, 0, w, h};
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);
@@ -214,10 +219,12 @@ void texed_process_ops(void) {
                 Image *dst = &ctx.img[ctx.img_pos];
                 int w = dst->width;
                 int h = dst->height;
-                Image img = GenImagePerlinNoise(w, h, 
-                                                op->params[0].i32,
-                                                op->params[1].i32,
-                                                op->params[2].flt);
+                Image img = texed_generate_perlin(w, h, 
+                                                  op->params[0].i32,
+                                                  op->params[1].i32,
+                                                  op->params[2].flt,
+                                                  op->params[3].color,
+                                                  op->params[4].color);
                 Rectangle rec = {0, 0, w, h};
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);
@@ -228,7 +235,9 @@ void texed_process_ops(void) {
                 int h = dst->height;
                 Image img = texed_generate_cellular(op->params[0].u32,
                                                     w, h, 
-                                                    op->params[1].i32);
+                                                    op->params[1].i32,
+                                                    op->params[2].color,
+                                                    op->params[3].color);
                 Rectangle rec = {0, 0, w, h};
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);
@@ -304,12 +313,12 @@ int _rand_r(unsigned int *seed) {
 }
 
 static inline
-Image texed_generate_noise(uint32_t seed, int width, int height, float factor) {
+Image texed_generate_noise(uint32_t seed, int width, int height, float factor, Color color1, Color color2) {
     Color *pixels = (Color *)RL_MALLOC(width*height*sizeof(Color));
     
     for (int i = 0; i < width*height; i++) {
-        if ((_rand_r(&seed)%99) < (int)(factor*100.0f)) pixels[i] = WHITE;
-        else pixels[i] = BLACK;
+        if ((_rand_r(&seed)%99) < (int)(factor*100.0f)) pixels[i] = color1;
+        else pixels[i] = color2;
     }
     
     Image image = {
@@ -324,7 +333,7 @@ Image texed_generate_noise(uint32_t seed, int width, int height, float factor) {
 }
 
 static inline
-Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize)
+Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize, Color color1, Color color2)
 {
     Color *pixels = (Color *)RL_MALLOC(width*height*sizeof(Color));
     
@@ -371,11 +380,46 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
             int intensity = (int)(minDistance*256.0f/tileSize);
             if (intensity > 255) intensity = 255;
             
-            pixels[y*width + x] = (Color){ intensity, intensity, intensity, 255 };
+            pixels[y*width + x] = ColorLerp(color1, color2, (float)intensity/255.0f);;
         }
     }
     
     RL_FREE(seeds);
+    
+    Image image = {
+        .data = pixels,
+        .width = width,
+        .height = height,
+        .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
+        .mipmaps = 1
+    };
+    
+    return image;
+}
+
+float stb_perlin_fbm_noise3(float x, float y, float z, float lacunarity, float gain, int octaves);
+
+Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, float scale, Color color1, Color color2) {
+    Color *pixels = (Color *)RL_MALLOC(width*height*sizeof(Color));
+    
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            float nx = (float)(x + offsetX)*scale/(float)width;
+            float ny = (float)(y + offsetY)*scale/(float)height;
+            
+            // Typical values to start playing with:
+            //   lacunarity = ~2.0   -- spacing between successive octaves (use exactly 2.0 for wrapping output)
+            //   gain       =  0.5   -- relative weighting applied to each successive octave
+            //   octaves    =  6     -- number of "octaves" of noise3() to sum
+            
+            // NOTE: We need to translate the data from [-1..1] to [0..1]
+            float p = (stb_perlin_fbm_noise3(nx, ny, 1.0f, 2.0f, 0.5f, 6) + 1.0f)/2.0f;
+            
+            pixels[y*width + x] = ColorLerp(color1, color2, p);
+        }
+    }
     
     Image image = {
         .data = pixels,

@@ -142,14 +142,14 @@ static td_op default_ops[] = {
         .cat = TCAT_GEN,
         PARAMS(2) {
             PARAM(TPARAM_COLOR, "top", "ffffffff"),
-            PARAM(TPARAM_COLOR, "bottom", "00000000"),
+            PARAM(TPARAM_COLOR, "bottom", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_IMAGE_GRAD_H),
         .cat = TCAT_GEN,
         PARAMS(2) {
             PARAM(TPARAM_COLOR, "left", "ffffffff"),
-            PARAM(TPARAM_COLOR, "right", "00000000"),
+            PARAM(TPARAM_COLOR, "right", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_IMAGE_GRAD_RAD),
@@ -157,7 +157,7 @@ static td_op default_ops[] = {
         PARAMS(3) {
             PARAM(TPARAM_FLOAT, "density", "0.5"),
             PARAM(TPARAM_COLOR, "inner", "ffffffff"),
-            PARAM(TPARAM_COLOR, "outer", "00000000"),
+            PARAM(TPARAM_COLOR, "outer", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_IMAGE_CHECKED),
@@ -166,29 +166,35 @@ static td_op default_ops[] = {
             PARAM(TPARAM_COORD, "checks_x", "16"),
             PARAM(TPARAM_COORD, "checks_y", "16"),
             PARAM(TPARAM_COLOR, "color1", "ffffffff"),
-            PARAM(TPARAM_COLOR, "color2", "00000000"),
+            PARAM(TPARAM_COLOR, "color2", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_IMAGE_NOISE_WHITE),
         .cat = TCAT_GEN,
-        PARAMS(2) {
+        PARAMS(4) {
             PARAM(TPARAM_COORD, "seed", "1"),
             PARAM(TPARAM_FLOAT, "factor", "0.5"),
+            PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
+            PARAM(TPARAM_COLOR, "color2", "ffffffff"),
         }
     },{
         OP(TOP_IMAGE_NOISE_PERLIN),
         .cat = TCAT_GEN,
-        PARAMS(3) {
+        PARAMS(5) {
             PARAM(TPARAM_COORD, "offset_x", "0"),
             PARAM(TPARAM_COORD, "offset_y", "0"),
             PARAM(TPARAM_FLOAT, "scale", "1.0"),
+            PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
+            PARAM(TPARAM_COLOR, "color2", "ffffffff"),
         }
     },{
         OP(TOP_IMAGE_CELLULAR),
         .cat = TCAT_GEN,
-        PARAMS(2) {
+        PARAMS(4) {
             PARAM(TPARAM_COORD, "seed", "1"),
             PARAM(TPARAM_COORD, "tile_size", "16"),
+            PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
+            PARAM(TPARAM_COLOR, "color2", "ffffffff"),
         }
     }
 };
