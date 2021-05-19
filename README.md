@@ -15,15 +15,15 @@
 
 <div align="center">
   <sub>
-    Brought to you by <a href="https://github.com/zaklaus">@zaklaus</a>,
+    Brought to you by <a href="https://github.com/zaklaus">@zaklaus</a>
     and <strong>contributors</strong>
   </sub>
 </div>
 
 # Introduction
-zpl.texed is a cross-platform stack-based image generation tool suitable for prototyping textures with pixelart aesthetics. It offers a suite of tools to generate/blend/modify stacked layers and also provides an ability to export bespoke textures into PNG files or packed C header files (a header containing array of bytes and various metadata).
+zpl.texed is a cross-platform stack-based image generation tool suitable for prototyping textures with pixel art aesthetics. It offers a suite of tools to generate/blend/modify stacked layers and also provides an ability to export bespoke textures into PNG files or packed C header files (a header containing an array of bytes and various metadata).
 
-zpl.texed is running on top of [raylib](https://raylib.com/) technologies and makes use of the [zpl](https://zpl.pw/) ecosystem alongside the **cwpack** library to provide a robust and intuitive user experience.
+**zpl.texed** runs on top of [raylib](https://raylib.com/) technologies and makes use of the [zpl](https://zpl.pw/) ecosystem alongside the **cwpack** library to provide a robust and intuitive user experience.
 
 ![texed preview](https://user-images.githubusercontent.com/9026786/118796542-ff717780-b89b-11eb-85ca-e5bbd60135e0.png)
 
@@ -31,8 +31,8 @@ zpl.texed is running on top of [raylib](https://raylib.com/) technologies and ma
 * it's fast and cross-platform
 * stack-based layer blending
 * various color operations
-* image generators, for instance: white noise, perlin, voronoi
-* it offers an ability to export resulting image to PNG or even a C header file
+* image generators, for instance: white noise, Perlin, Voronoi
+* it offers the ability to export the resulting image to PNG or even a C header file
 
 # How to obtain texed
 ## Download at itch.io
@@ -40,7 +40,7 @@ zpl.texed is running on top of [raylib](https://raylib.com/) technologies and ma
 
 ## Build the project
 We use CMake to generate project files and manage builds.
-You can do the following on the command line to generate and build this project:
+You can do the following on the command line to create and build this project:
 ```sh
 git clone https://github.com/zpl-c/texed.git
 cd texed
