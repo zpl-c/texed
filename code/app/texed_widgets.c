@@ -141,19 +141,29 @@ void texed_draw_topbar(zpl_aabb2 r) {
 }
 
 void texed_draw_oplist_pane(zpl_aabb2 r) {
+    static Vector2 panel_scroll = {1, 1};
+    zpl_aabb2 add_op_r = zpl_aabb2_cut_right(&r, 200.0f);
+    
+    // NOTE(zaklaus): recalculate height based on ops count
+    Rectangle panel_rec = aabb2_ray(r);
+    float list_y = zpl_array_count(ctx.ops)*25.0f;
+    if (list_y >= (r.max.y-r.min.y)) r.min.x += 12.0f;
+    else r.min.x += 2.0f;
+    r.max.y = r.min.y + list_y;
+    Rectangle content = aabb2_ray(r);
+    
     // NOTE(zaklaus): add operator
     {
-        zpl_aabb2 add_op_r = zpl_aabb2_cut_right(&r, 200.0f);
         DrawAABB(add_op_r, GetColor(0x122025));
         add_op_r = zpl_aabb2_contract(&add_op_r, 3.0f);
-        Rectangle panel_rec = aabb2_ray(add_op_r);
-        static Vector2 panel_scroll = {99, -20};
+        Rectangle add_panel_rec = aabb2_ray(add_op_r);
+        static Vector2 add_panel_scroll = {1, 1};
         float list_y = (DEF_OPS_LEN) * 22.5f;
         if (list_y >= (add_op_r.max.y-add_op_r.min.y)) add_op_r.min.x += 12.0f;
         else add_op_r.min.x += 2.0f;
         add_op_r.max.y = add_op_r.min.y + list_y;
         
-        Rectangle view = GuiScrollPanel(panel_rec, aabb2_ray(add_op_r), &panel_scroll);
+        Rectangle view = GuiScrollPanel(add_panel_rec, aabb2_ray(add_op_r), &add_panel_scroll);
         
         BeginScissorMode(view.x, view.y, view.width, view.height);
         GuiSetStyle(BUTTON, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_LEFT);
@@ -164,8 +174,8 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
             Color color = cat_info.color;
             
             zpl_aabb2 add_op_btn_r = zpl_aabb2_cut_top(&add_op_r, 22.5f);
-            add_op_btn_r.min.y += panel_scroll.y;
-            add_op_btn_r.max.y += panel_scroll.y;
+            add_op_btn_r.min.y += add_panel_scroll.y;
+            add_op_btn_r.max.y += add_panel_scroll.y;
             add_op_btn_r.max.x -= 2.0f;
             zpl_aabb2_cut_bottom(&add_op_btn_r, 2.5f);
             
@@ -174,6 +184,14 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
             
             if (GuiButton(aabb2_ray(add_op_btn_r), prettify_op_name(i))) {
                 texed_add_op(default_ops[i].kind);
+                
+                float ypos = panel_rec.y + ctx.selected_op*25.0f;
+                if (ypos < panel_rec.y+panel_scroll.y || ypos+25.0f > panel_rec.y+panel_scroll.y+panel_rec.height) {
+                    content.height += 25.0f;
+                    
+                    // TODO(zaklaus): approximate the position for now
+                    panel_scroll.y = -ctx.selected_op*25.0f;
+                }
             }
             
             GuiSetStyle(BUTTON, BORDER, 0x838383ff);
@@ -184,16 +202,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         EndScissorMode();
     }
     
-    // NOTE(zaklaus): recalculate height based on ops count
-    Rectangle panel_rec = aabb2_ray(r);
-    static Vector2 panel_scroll = {99, -20};
-    float list_y = zpl_array_count(ctx.ops)*25.0f;
-    if (list_y >= (r.max.y-r.min.y)) r.min.x += 12.0f;
-    else r.min.x += 2.0f;
-    r.max.y = r.min.y + list_y;
-    
-    Rectangle view = GuiScrollPanel(panel_rec, aabb2_ray(r), &panel_scroll);
-    
+    Rectangle view = GuiScrollPanel(panel_rec, content, &panel_scroll);
     BeginScissorMode(view.x, view.y, view.width, view.height);
     
     // NOTE(zaklaus): operator list
@@ -275,6 +284,13 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         zpl_aabb2 clone_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
         if (GuiButton(aabb2_ray(clone_r), "#16#")) {
             texed_clone_op(i, op);
+            float ypos = panel_rec.y + ctx.selected_op*25.0f;
+            if (ypos < panel_rec.y+panel_scroll.y || ypos+25.0f > panel_rec.y+panel_scroll.y+panel_rec.height) {
+                content.height += 25.0f;
+                
+                // TODO(zaklaus): approximate the position for now
+                panel_scroll.y = -ctx.selected_op*25.0f;
+            }
             GuiSetState(GUI_STATE_NORMAL);
             break;
         }
