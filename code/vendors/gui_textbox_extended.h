@@ -401,7 +401,7 @@ RAYGUIDEF void GuiTextBoxCut(char* text)
 RAYGUIDEF bool GuiTextBoxEx(Rectangle bounds, char *text, int textSize, bool editMode)
 {
     // Define the cursor movement/selection speed when movement keys are held/pressed
-#define TEXTBOX_CURSOR_COOLDOWN   5
+#define TEXTBOX_CURSOR_COOLDOWN   10
     
     static int framesCounter = 0;           // Required for blinking cursor
     

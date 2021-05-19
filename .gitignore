@@ -1,6 +1,7 @@
 build
 build.bat
 run.bat
+run_release.bat
 clean.bat
 work
 .vscode

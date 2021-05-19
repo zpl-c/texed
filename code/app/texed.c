@@ -55,7 +55,9 @@ typedef struct {
         };
         uint32_t u32;
         int32_t i32;
-        Color color;
+        struct {
+            Color color, old_color;
+        };
         char copy[4];
     };
 } td_param;

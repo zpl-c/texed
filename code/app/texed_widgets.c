@@ -369,12 +369,18 @@ void texed_draw_props_pane(zpl_aabb2 r) {
                     zpl_aabb2 ok_r = zpl_aabb2_cut_left(&extra_r, 50.0f);
                     p->color = GuiColorPicker(aabb2_ray(extra_r), p->color);
                     
+                    if (zpl_memcompare(&p->color, &p->old_color, sizeof(p->color))) {
+                        int_to_hex_color(ColorToInt(p->color), p->str);
+                        texed_repaint_preview();
+                        p->old_color = p->color;
+                    }
+                    
+                    p->color = GetColor((int)zpl_str_to_u64(p->str, NULL, 16));
+                    
                     if (GuiButton(aabb2_ray(ok_r), "OK")) {
                         GuiUnlock();
                         p->edit_mode = false;
                         is_color_editing = false;
-                        int_to_hex_color(ColorToInt(p->color), p->str);
-                        texed_repaint_preview();
                     }
                 }
                 if (is_color_editing) GuiLock();

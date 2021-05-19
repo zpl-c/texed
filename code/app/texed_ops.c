@@ -222,7 +222,7 @@ void texed_process_ops(void) {
                 Image img = texed_generate_perlin(w, h, 
                                                   op->params[0].i32,
                                                   op->params[1].i32,
-                                                  op->params[2].flt,
+                                                  op->params[2].flt*50.0f,
                                                   op->params[3].color,
                                                   op->params[4].color);
                 Rectangle rec = {0, 0, w, h};
@@ -382,7 +382,7 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
             minDistance = zpl_max(cell_offset, minDistance);
             
             float intensity = (minDistance-cell_offset)/(float)tileSize;
-            //if (intensity > 255) intensity = 255;
+            if (intensity > 1.0f) intensity = 1.0f;
             
             pixels[y*width + x] = ColorLerp(color1, color2, (float)intensity);
         }
