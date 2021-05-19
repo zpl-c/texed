@@ -246,6 +246,8 @@ void texed_process_ops(void) {
                 zpl_printf("unsupported op: %s\n!", op->name);
             }break;
         }
+        
+        if (op->is_breakpoint) break;
     }
 }
 

@@ -260,9 +260,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetState(GUI_STATE_NORMAL);
         
         zpl_aabb2 lock_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
-        
         if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
-        
         if (op->is_locked) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(BLUE));
         }
@@ -273,6 +271,15 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetStyle(BUTTON, BASE, 0x202020ff);
         GuiSetState(GUI_STATE_NORMAL);
         
+        if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
+        zpl_aabb2 clone_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        if (GuiButton(aabb2_ray(clone_r), "#16#")) {
+            texed_clone_op(i, op);
+            GuiSetState(GUI_STATE_NORMAL);
+            break;
+        }
+        GuiSetState(GUI_STATE_NORMAL);
+        
         if (ctx.selected_op == i) GuiSetState(GUI_STATE_DISABLED);
         zpl_aabb2 select_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
         
@@ -280,7 +287,19 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
             ctx.selected_op = i;
             ctx.is_saved = false;
         }
-        GuiSetState(GUI_STATE_NORMAL); 
+        GuiSetState(GUI_STATE_NORMAL);
+        
+        if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
+        zpl_aabb2 bp_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        if (op->is_breakpoint) {
+            GuiSetStyle(BUTTON, BASE, ColorToInt(GREEN));
+        }
+        if (GuiButton(aabb2_ray(bp_r), "#64#")) {
+            op->is_breakpoint = !op->is_breakpoint;
+            texed_repaint_preview();
+        }
+        GuiSetStyle(BUTTON, BASE, 0x202020ff);
+        GuiSetState(GUI_STATE_NORMAL);
         
         GuiDrawText(zpl_bprintf("%s %s", prettify_op_name(texed_find_op(op->kind)), op->is_locked ? "(locked)" : ""), GetTextBounds(LABEL, list_text), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(RAYWHITE, guiAlpha));
     }

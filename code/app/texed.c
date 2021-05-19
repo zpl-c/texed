@@ -116,6 +116,7 @@ typedef struct {
     tcat_kind cat;
     bool is_hidden;
     bool is_locked;
+    bool is_breakpoint;
     
     uint8_t num_params;
     td_param *params;
@@ -167,6 +168,7 @@ void texed_img_push(int w, int h, Color color);
 void texed_img_pop(int x, int y, int w, int h, Color tint, bool drop);
 
 void texed_add_op(int kind);
+void texed_clone_op(int idx, td_op *dop);
 void texed_rem_op(int idx);
 void texed_swp_op(int idx, int idx2);
 int texed_find_op(int kind);
@@ -501,6 +503,36 @@ void texed_add_op(int kind) {
         zpl_array_count(ctx.ops)++;
     } while (0);
     ctx.selected_op++;
+    
+    texed_repaint_preview();
+}
+
+void texed_clone_op(int ind, td_op *dop) {
+    assert(dop);
+    
+    td_op op = {
+        .kind = dop->kind,
+        .name = dop->name,
+        .is_locked = dop->is_locked,
+        .is_breakpoint = dop->is_breakpoint,
+        .is_hidden = dop->is_hidden,
+        .num_params = dop->num_params,
+        .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)
+    };
+    
+    zpl_memcopy(op.params, dop->params, sizeof(td_param)*dop->num_params);
+    
+    //TODO(zaklaus): weird stuff down there
+    //zpl_array_append_at(ctx.ops, op, ctx.selected_op+1);
+    ind += 1;
+    do {                            
+        if (ind >= zpl_array_count(ctx.ops)) { zpl_array_append(ctx.ops, op); break; }
+        if (zpl_array_capacity(ctx.ops) < zpl_array_count(ctx.ops) + 1) zpl_array_grow(ctx.ops, 0);
+        zpl_memmove(&(ctx.ops)[ind + 1], (ctx.ops + ind), zpl_size_of(td_op) * (zpl_array_count(ctx.ops) - ind));
+        ctx.ops[ind] = op;
+        zpl_array_count(ctx.ops)++;
+    } while (0);
+    ctx.selected_op = ind;
     
     texed_repaint_preview();
 }
