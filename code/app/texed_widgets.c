@@ -169,7 +169,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetStyle(BUTTON, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_LEFT);
         
         for (int i = 0; i < DEF_OPS_LEN; i += 1) {
-            if (default_ops[i].is_locked) continue;
+            if (default_ops[i].is_fixed) continue;
             tcat_desc cat_info = default_cats[default_ops[i].cat];
             Color color = cat_info.color;
             
@@ -250,13 +250,13 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         
         zpl_aabb2 remove_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
         
-        if (op->is_locked) GuiSetState(GUI_STATE_DISABLED);
+        if (op->is_locked || op->is_fixed) GuiSetState(GUI_STATE_DISABLED);
         if (GuiButton(aabb2_ray(remove_r), "#143#")) {
             texed_rem_op(i);
         }
         
         zpl_aabb2 hidden_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
-        if (!default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_NORMAL);
+        if (!default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_NORMAL);
         
         if (op->is_hidden) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(RED));
@@ -269,7 +269,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetState(GUI_STATE_NORMAL);
         
         zpl_aabb2 lock_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
-        if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
+        if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
         if (op->is_locked) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(BLUE));
         }
@@ -280,7 +280,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetStyle(BUTTON, BASE, 0x202020ff);
         GuiSetState(GUI_STATE_NORMAL);
         
-        if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
+        if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
         zpl_aabb2 clone_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
         if (GuiButton(aabb2_ray(clone_r), "#16#")) {
             texed_clone_op(i, op);
@@ -305,7 +305,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         }
         GuiSetState(GUI_STATE_NORMAL);
         
-        if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
+        if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
         zpl_aabb2 bp_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
         if (ctx.bp_op == i) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(GREEN));

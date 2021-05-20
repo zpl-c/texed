@@ -118,6 +118,7 @@ typedef struct {
     tcat_kind cat;
     bool is_hidden;
     bool is_locked;
+    bool is_fixed;
     
     uint8_t num_params;
     td_param *params;
@@ -494,6 +495,7 @@ void texed_add_op(int kind) {
         .kind = dop->kind,
         .name = dop->name,
         .is_locked = dop->is_locked,
+        .is_fixed = dop->is_fixed,
         .num_params = dop->num_params,
         .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)
     };

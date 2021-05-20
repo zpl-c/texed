@@ -7,7 +7,7 @@ static td_op default_ops[] = {
     {
         OP(TOP_NEW_IMAGE),
         .cat = TCAT_STACK,
-        .is_locked = true,
+        .is_fixed = true,
         PARAMS(3) {
             PARAM(TPARAM_COORD, "w", "64"),
             PARAM(TPARAM_COORD, "h", "64"),
