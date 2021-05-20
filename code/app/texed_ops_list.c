@@ -180,12 +180,15 @@ static td_op default_ops[] = {
     },{
         OP(TOP_IMAGE_NOISE_PERLIN),
         .cat = TCAT_GEN,
-        PARAMS(5) {
+        PARAMS(8) {
             PARAM(TPARAM_COORD, "offset_x", "0"),
             PARAM(TPARAM_COORD, "offset_y", "0"),
             PARAM(TPARAM_SLIDER, "scale", "0.02"),
             PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
             PARAM(TPARAM_COLOR, "color2", "ffffffff"),
+            PARAM(TPARAM_SLIDER, "lacunarity", "0.2"),
+            PARAM(TPARAM_SLIDER, "gain", "0.5"),
+            PARAM(TPARAM_COORD, "octaves", "6"),
         }
     },{
         OP(TOP_IMAGE_CELLULAR),

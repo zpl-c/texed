@@ -214,7 +214,10 @@ void texed_process_ops(void) {
                                                   op->params[1].i32,
                                                   op->params[2].flt*50.0f,
                                                   op->params[3].color,
-                                                  op->params[4].color);
+                                                  op->params[4].color,
+                                                  op->params[5].flt*10.0f,
+                                                  op->params[6].flt,
+                                                  op->params[7].i32);
                 Rectangle rec = {0, 0, w, h};
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);

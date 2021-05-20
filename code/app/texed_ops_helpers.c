@@ -73,7 +73,7 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
         {
             int tileX = x/tileSize;
             
-            float minDistance = (float)strtod("Inf", NULL);
+            float minDistance = ZPL_F32_MAX;
             
             // Check all adjacent tiles
             for (int i = -1; i < 2; i++)
@@ -87,16 +87,13 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
                     Vector2 neighborSeed = seeds[(tileY + j)*seedsPerRow + tileX + i];
                     
                     float dist = (float)hypot(x - (int)neighborSeed.x, y - (int)neighborSeed.y);
-                    minDistance = (float)fmin(minDistance, dist);
+                    minDistance = zpl_min(minDistance, dist);
                 }
             }
             
             minDistance = zpl_max(cell_offset, minDistance);
-            
-            float intensity = (minDistance-cell_offset)/(float)tileSize;
-            if (intensity > 1.0f) intensity = 1.0f;
-            
-            pixels[y*width + x] = ColorLerp(color1, color2, (float)intensity);
+            float intensity = zpl_min(((minDistance-cell_offset)/(float)tileSize), 1.0f);
+            pixels[y*width + x] = ColorLerp(color1, color2, intensity);
         }
     }
     
@@ -115,7 +112,7 @@ Image texed_generate_cellular(uint32_t seed, int width, int height, int tileSize
 
 float stb_perlin_fbm_noise3(float x, float y, float z, float lacunarity, float gain, int octaves);
 
-Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, float scale, Color color1, Color color2) {
+Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, float scale, Color color1, Color color2, float lacunarity, float gain, int octaves) {
     Color *pixels = (Color *)RL_MALLOC(width*height*sizeof(Color));
     
     for (int y = 0; y < height; y++)
@@ -131,9 +128,9 @@ Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, flo
             //   octaves    =  6     -- number of "octaves" of noise3() to sum
             
             // NOTE: We need to translate the data from [-1..1] to [0..1]
-            float p = (stb_perlin_fbm_noise3(nx, ny, 1.0f, 2.0f, 0.5f, 6) + 1.0f)/2.0f;
+            float p = (stb_perlin_fbm_noise3(nx, ny, 1.0f, lacunarity, gain, octaves) + 1.0f)/2.0f;
             
-            pixels[y*width + x] = ColorLerp(color1, color2, p);
+            pixels[y*width + x] = ColorLerp(color1, color2, zpl_clamp(p, 0.0f, 1.0f));
         }
     }
     
