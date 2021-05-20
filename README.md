@@ -36,7 +36,9 @@ zpl.texed is a cross-platform stack-based image generation tool suitable for pro
 
 # How to obtain texed
 ## Download at itch.io
-*Coming soon...*
+You can download this tool at [itch.io](https://zaklaus.itch.io/texed)!
+
+**NOTE:** While GitHub sources contain the most recent development builds, the **itch.io** page is considered to be the stable channel with less frequent updates.
 
 ## Build the project
 We use CMake to generate project files and manage builds.
