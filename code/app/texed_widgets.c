@@ -307,11 +307,11 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         
         if (default_ops[texed_find_op(op->kind)].is_locked) GuiSetState(GUI_STATE_DISABLED);
         zpl_aabb2 bp_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
-        if (op->is_breakpoint) {
+        if (ctx.bp_op == i) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(GREEN));
         }
         if (GuiButton(aabb2_ray(bp_r), "#64#")) {
-            op->is_breakpoint = !op->is_breakpoint;
+            ctx.bp_op = (ctx.bp_op != i) ? i : -1;
             texed_repaint_preview();
         }
         GuiSetStyle(BUTTON, BASE, 0x202020ff);

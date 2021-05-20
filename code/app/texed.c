@@ -118,7 +118,6 @@ typedef struct {
     tcat_kind cat;
     bool is_hidden;
     bool is_locked;
-    bool is_breakpoint;
     
     uint8_t num_params;
     td_param *params;
@@ -145,6 +144,7 @@ typedef struct {
     
     td_op *ops; //< zpl_array
     int selected_op;
+    int bp_op;
 } td_ctx;
 
 static td_ctx ctx = {0};
@@ -378,6 +378,7 @@ int main(int argc, char **argv) {
 void texed_new(int32_t w, int32_t h) {
     ctx.img_pos = -1;
     ctx.selected_op = -1;
+    ctx.bp_op = -1;
     zpl_memset(ctx.img, 0, sizeof(Image)*TD_IMAGES_MAX_STACK);
     ctx.filepath = NULL;
     ctx.msgbox.result = -1;
@@ -521,7 +522,6 @@ void texed_clone_op(int ind, td_op *dop) {
         .kind = dop->kind,
         .name = dop->name,
         .is_locked = dop->is_locked,
-        .is_breakpoint = dop->is_breakpoint,
         .is_hidden = dop->is_hidden,
         .num_params = dop->num_params,
         .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)

@@ -190,12 +190,13 @@ static td_op default_ops[] = {
     },{
         OP(TOP_IMAGE_CELLULAR),
         .cat = TCAT_GEN,
-        PARAMS(5) {
+        PARAMS(6) {
             PARAM(TPARAM_COORD, "seed", "1"),
             PARAM(TPARAM_COORD, "tile_size", "16"),
             PARAM(TPARAM_COLOR, "color1", PARAM_DEF_COLOR),
             PARAM(TPARAM_COLOR, "color2", "ffffffff"),
             PARAM(TPARAM_SLIDER, "cell_offset", "0.0"),
+            PARAM(TPARAM_SLIDER, "density", "1.0"),
         }
     }
 };
