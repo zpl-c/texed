@@ -1,4 +1,5 @@
 #include "texed_ops_helpers.c"
+#include "texed_ops_mgr.c"
 
 void texed_process_ops(void) {
     for (int i = 0; i <= ctx.img_pos; i+=1)

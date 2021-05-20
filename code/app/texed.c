@@ -21,6 +21,8 @@
 #define TD_UI_PREVIEW_BORDER 4.0f
 #define TD_UI_DEFAULT_ZOOM 4.0f
 #define TD_IMAGES_MAX_STACK 128
+#define TD_OP_MOD_ICON_DIM 20.0f
+#define TD_OP_LIST_ITEM_HEIGHT 25.0f
 
 static uint16_t screenWidth = 1280;
 static uint16_t screenHeight = 720;
@@ -32,44 +34,7 @@ static uint16_t old_screen_h;
 static bool is_repaint_locked = false;
 static int render_tiles = 0;
 
-typedef enum {
-    TPARAM_FLOAT,
-    TPARAM_COORD,
-    TPARAM_INT,
-    TPARAM_COLOR,
-    TPARAM_STRING,
-    TPARAM_SLIDER,
-    
-    TPARAM_FORCE_UINT8 = UINT8_MAX
-} td_param_kind;
-
-typedef struct {
-    td_param_kind kind;
-    char const *name;
-    char str[1000];
-    bool edit_mode;
-    
-    union {
-        struct {
-            float flt, old_flt;
-        };
-        uint32_t u32;
-        int32_t i32;
-        struct {
-            Color color, old_color;
-        };
-        char copy[4];
-    };
-} td_param;
-
-typedef enum {
-    TCAT_STACK,
-    TCAT_GEN,
-    TCAT_DRAW,
-    TCAT_MOD,
-    
-    TCAT_FORCE_UINT8 = UINT8_MAX
-} tcat_kind;
+#include "texed_params.h"
 
 typedef struct {
     tcat_kind kind;
@@ -77,40 +42,7 @@ typedef struct {
     Color color;
 } tcat_desc;
 
-typedef enum {
-    TOP_NEW_IMAGE,
-    TOP_DRAW_RECT,
-    TOP_DRAW_LINE,
-    TOP_DITHER,
-    TOP_DRAW_IMAGE,
-    TOP_DRAW_TEXT,
-    TOP_RESIZE_IMAGE,
-    TOP_COLOR_TWEAKS,
-    TOP_FLIP_IMAGE,
-    TOP_ROTATE_IMAGE,
-    
-    TOP_PUSH_IMAGE,
-    TOP_POP_IMAGE,
-    
-    TOP_IMAGE_GRAD_V,
-    TOP_IMAGE_GRAD_H,
-    TOP_IMAGE_GRAD_RAD,
-    TOP_IMAGE_CHECKED,
-    TOP_IMAGE_NOISE_WHITE,
-    TOP_IMAGE_NOISE_PERLIN,
-    TOP_IMAGE_CELLULAR,
-    
-    TOP_COLOR_REPLACE,
-    
-    TOP_IMAGE_ALPHA_MASK,
-    TOP_IMAGE_ALPHA_MASK_CLEAR,
-    
-    TOP_DROP_IMAGE,
-    TOP_DRAW_IMAGE_INSTANCE,
-    TOP_CLONE_IMAGE,
-    
-    TOP_FORCE_UINT8 = UINT8_MAX
-} td_op_kind;
+#include "texed_ops_ids.h"
 
 typedef struct {
     td_op_kind kind;
@@ -152,53 +84,10 @@ static td_ctx ctx = {0};
 
 static char filename[200];
 
+#include "texed.h"
 #include "texed_ops_list.c"
-
-void texed_new(int w, int h);
-void texed_clear(void);
-void texed_destroy(void);
-void texed_load(void);
-void texed_save(void);
-void texed_export_cc(char const *path);
-void texed_export_png(char const *path);
-void texed_repaint_preview(void);
-void texed_compose_image(void);
-void texed_msgbox_init(char const *title, char const *message, char const *buttons);
-void texed_process_ops(void);
-void texed_process_params(void);
-
-void texed_img_push(int w, int h, Color color);
-void texed_img_pop(int x, int y, int w, int h, Color tint, bool drop);
-
-void texed_add_op(int kind);
-void texed_clone_op(int idx, td_op *dop);
-void texed_rem_op(int idx);
-void texed_swp_op(int idx, int idx2);
-int texed_find_op(int kind);
-
-void texed_draw_oplist_pane(zpl_aabb2 r);
-void texed_draw_props_pane(zpl_aabb2 r);
-void texed_draw_topbar(zpl_aabb2 r);
-void texed_draw_msgbox(zpl_aabb2 r);
-
-static inline
-void DrawAABB(zpl_aabb2 rect, Color color) {
-    DrawRectangleEco(rect.min.x, rect.min.y,
-                     rect.max.x-rect.min.x,
-                     rect.max.y-rect.min.y,
-                     color);
-}
-
-static inline
-Rectangle aabb2_ray(zpl_aabb2 r) {
-    return (Rectangle) {
-        .x = r.min.x,
-        .y = r.min.y,
-        .width = r.max.x-r.min.x,
-        .height = r.max.y-r.min.y
-    };
-}
-
+#include "texed_helpers.c"
+#include "texed_img.c"
 #include "texed_ops.c"
 #include "texed_prj.c"
 #include "texed_widgets.c"
@@ -307,6 +196,7 @@ int main(int argc, char **argv) {
         
         // NOTE(zaklaus): ensure we reset styling to our defaults each frame
         {
+            GuiLoadStyleDefault();
             GuiSetStyle(TEXTBOX, TEXT_COLOR_NORMAL, ColorToInt(RAYWHITE));
             GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x012e33ff);
             GuiSetStyle(BUTTON, BASE, 0x202020ff);
@@ -418,150 +308,10 @@ void texed_export_png(char const *path) {
     ExportImage(ctx.img[ctx.img_pos], zpl_bprintf("art/gen/%s.png", GetFileNameWithoutExt(path)));
 }
 
-void texed_img_push(int w, int h, Color color) {
-    if (ctx.img_pos == TD_IMAGES_MAX_STACK)
-        return;
-    
-    ctx.img_pos += 1;
-    ctx.img[ctx.img_pos] = GenImageColor(w, h, color);
-}
-
-void texed_img_pop(int x, int y, int w, int h, Color tint, bool drop) {
-    if (ctx.img_pos == 0)
-        return;
-    
-    Image *oi = &ctx.img[ctx.img_pos];
-    Image *di = &ctx.img[ctx.img_pos-1];
-    
-    Rectangle src = {
-        0, 0,
-        oi->width, oi->height
-    };
-    
-    w = (w == 0) ? di->width : w;
-    h = (h == 0) ? di->height : h;
-    
-    Rectangle dst = {
-        x, y,
-        w, h,
-    };
-    
-    ImageDraw(di, *oi, src, dst, tint); 
-    if (drop) {
-        UnloadImage(ctx.img[ctx.img_pos]);
-        ctx.img_pos -= 1;
-    }
-}
-
-void texed_repaint_preview(void) {
-    if (is_repaint_locked) return;
-    texed_compose_image();
-    
-    if (!IsWindowReady()) return;
-    UnloadTexture(ctx.tex);
-    ctx.tex = LoadTextureFromImage(ctx.img[ctx.img_pos]);
-}
-
-void texed_compose_image(void) {
-    if (is_repaint_locked) return;
-    ctx.is_saved = false;
-    texed_process_params();
-    texed_process_ops();
-}
-
 void texed_msgbox_init(char const *title, char const *message, char const *buttons) {
     ctx.msgbox.result = -1;
     ctx.msgbox.visible = true;
     ctx.msgbox.title = title;
     ctx.msgbox.message = message;
     ctx.msgbox.buttons = buttons;
-}
-
-int texed_find_op(int kind) {
-    for (int i = 0; i < DEF_OPS_LEN; i += 1) {
-        if (default_ops[i].kind == kind) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-void texed_add_op(int kind) {
-    int idx = texed_find_op(kind);
-    assert(idx >= 0);
-    td_op *dop = &default_ops[idx];
-    
-    td_op op = {
-        .kind = dop->kind,
-        .name = dop->name,
-        .is_locked = dop->is_locked,
-        .is_fixed = dop->is_fixed,
-        .num_params = dop->num_params,
-        .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)
-    };
-    
-    zpl_memcopy(op.params, dop->params, sizeof(td_param)*dop->num_params);
-    
-    //TODO(zaklaus): weird stuff down there
-    //zpl_array_append_at(ctx.ops, op, ctx.selected_op+1);
-    int ind = ctx.selected_op+1;
-    do {                            
-        if (ind >= zpl_array_count(ctx.ops)) { zpl_array_append(ctx.ops, op); break; }
-        if (zpl_array_capacity(ctx.ops) < zpl_array_count(ctx.ops) + 1) zpl_array_grow(ctx.ops, 0);
-        zpl_memmove(&(ctx.ops)[ind + 1], (ctx.ops + ind), zpl_size_of(td_op) * (zpl_array_count(ctx.ops) - ind));
-        ctx.ops[ind] = op;
-        zpl_array_count(ctx.ops)++;
-    } while (0);
-    ctx.selected_op++;
-    
-    texed_repaint_preview();
-}
-
-void texed_clone_op(int ind, td_op *dop) {
-    assert(dop);
-    
-    td_op op = {
-        .kind = dop->kind,
-        .name = dop->name,
-        .is_locked = dop->is_locked,
-        .is_hidden = dop->is_hidden,
-        .num_params = dop->num_params,
-        .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)
-    };
-    
-    zpl_memcopy(op.params, dop->params, sizeof(td_param)*dop->num_params);
-    
-    //TODO(zaklaus): weird stuff down there
-    //zpl_array_append_at(ctx.ops, op, ctx.selected_op+1);
-    ind += 1;
-    do {                            
-        if (ind >= zpl_array_count(ctx.ops)) { zpl_array_append(ctx.ops, op); break; }
-        if (zpl_array_capacity(ctx.ops) < zpl_array_count(ctx.ops) + 1) zpl_array_grow(ctx.ops, 0);
-        zpl_memmove(&(ctx.ops)[ind + 1], (ctx.ops + ind), zpl_size_of(td_op) * (zpl_array_count(ctx.ops) - ind));
-        ctx.ops[ind] = op;
-        zpl_array_count(ctx.ops)++;
-    } while (0);
-    ctx.selected_op = ind;
-    
-    texed_repaint_preview();
-}
-
-void texed_swp_op(int idx, int idx2) {
-    assert(idx >= 0 && idx < (int)zpl_array_count(ctx.ops));
-    assert(idx2 >= 0 && idx2 < (int)zpl_array_count(ctx.ops));
-    
-    td_op tmp = ctx.ops[idx2];
-    ctx.ops[idx2] = ctx.ops[idx];
-    ctx.ops[idx] = tmp;
-    if (idx == ctx.selected_op) ctx.selected_op = idx2;
-    texed_repaint_preview();
-}
-
-void texed_rem_op(int idx) {
-    assert(idx >= 0 && idx < (int)zpl_array_count(ctx.ops));
-    zpl_mfree(ctx.ops[idx].params);
-    zpl_array_remove_at(ctx.ops, idx);
-    
-    if (zpl_array_count(ctx.ops) > 0 && idx <= ctx.selected_op) ctx.selected_op -= 1;
-    texed_repaint_preview();
 }

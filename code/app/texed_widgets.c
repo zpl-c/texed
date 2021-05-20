@@ -185,12 +185,12 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
             if (GuiButton(aabb2_ray(add_op_btn_r), prettify_op_name(i))) {
                 texed_add_op(default_ops[i].kind);
                 
-                float ypos = panel_rec.y + ctx.selected_op*25.0f;
-                if (ypos < panel_rec.y+panel_scroll.y || ypos+25.0f > panel_rec.y+panel_scroll.y+panel_rec.height) {
-                    content.height += 25.0f;
+                float ypos = panel_rec.y + ctx.selected_op*TD_OP_LIST_ITEM_HEIGHT;
+                if (ypos < panel_rec.y+panel_scroll.y || ypos+TD_OP_LIST_ITEM_HEIGHT > panel_rec.y+panel_scroll.y+panel_rec.height) {
+                    content.height += TD_OP_LIST_ITEM_HEIGHT;
                     
                     // TODO(zaklaus): approximate the position for now
-                    panel_scroll.y = -ctx.selected_op*25.0f;
+                    panel_scroll.y = -ctx.selected_op*TD_OP_LIST_ITEM_HEIGHT;
                 }
             }
             
@@ -208,7 +208,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
     // NOTE(zaklaus): operator list
     for (int i = 0; i < zpl_array_count(ctx.ops); i += 1) {
         td_op *op = &ctx.ops[i];
-        zpl_aabb2 op_item_r = zpl_aabb2_cut_top(&r, 25.0f);
+        zpl_aabb2 op_item_r = zpl_aabb2_cut_top(&r, TD_OP_LIST_ITEM_HEIGHT);
         op_item_r.min.y += panel_scroll.y;
         op_item_r.max.y += panel_scroll.y;
         zpl_aabb2_cut_top(&op_item_r, 2.5f);
@@ -248,14 +248,14 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
             DrawAABB(theme_stripe, RED);
         }
         
-        zpl_aabb2 remove_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 remove_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         
         if (op->is_locked || op->is_fixed) GuiSetState(GUI_STATE_DISABLED);
         if (GuiButton(aabb2_ray(remove_r), "#143#")) {
             texed_rem_op(i);
         }
         
-        zpl_aabb2 hidden_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 hidden_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         if (!default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_NORMAL);
         
         if (op->is_hidden) {
@@ -268,7 +268,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetStyle(BUTTON, BASE, 0x202020ff);
         GuiSetState(GUI_STATE_NORMAL);
         
-        zpl_aabb2 lock_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 lock_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
         if (op->is_locked) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(BLUE));
@@ -281,15 +281,15 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetState(GUI_STATE_NORMAL);
         
         if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
-        zpl_aabb2 clone_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 clone_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         if (GuiButton(aabb2_ray(clone_r), "#16#")) {
             texed_clone_op(i, op);
-            float ypos = panel_rec.y + ctx.selected_op*25.0f;
-            if (ypos < panel_rec.y+panel_scroll.y || ypos+25.0f > panel_rec.y+panel_scroll.y+panel_rec.height) {
-                content.height += 25.0f;
+            float ypos = panel_rec.y + ctx.selected_op*TD_OP_LIST_ITEM_HEIGHT;
+            if (ypos < panel_rec.y+panel_scroll.y || ypos+TD_OP_LIST_ITEM_HEIGHT > panel_rec.y+panel_scroll.y+panel_rec.height) {
+                content.height += TD_OP_LIST_ITEM_HEIGHT;
                 
                 // TODO(zaklaus): approximate the position for now
-                panel_scroll.y = -ctx.selected_op*25.0f;
+                panel_scroll.y = -ctx.selected_op*TD_OP_LIST_ITEM_HEIGHT;
             }
             GuiSetState(GUI_STATE_NORMAL);
             break;
@@ -297,7 +297,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetState(GUI_STATE_NORMAL);
         
         if (ctx.selected_op == i) GuiSetState(GUI_STATE_DISABLED);
-        zpl_aabb2 select_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 select_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         
         if (GuiButton(aabb2_ray(select_r), "#141#")) {
             ctx.selected_op = i;
@@ -306,7 +306,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         GuiSetState(GUI_STATE_NORMAL);
         
         if (default_ops[texed_find_op(op->kind)].is_fixed) GuiSetState(GUI_STATE_DISABLED);
-        zpl_aabb2 bp_r = zpl_aabb2_cut_right(&op_item_r, 20.0f);
+        zpl_aabb2 bp_r = zpl_aabb2_cut_right(&op_item_r, TD_OP_MOD_ICON_DIM);
         if (ctx.bp_op == i) {
             GuiSetStyle(BUTTON, BASE, ColorToInt(GREEN));
         }
@@ -332,6 +332,13 @@ void texed_draw_props_pane(zpl_aabb2 r) {
     }
     
     td_op *op = &ctx.ops[ctx.selected_op];
+    if (op->num_params == 0) {
+        GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_CENTER);
+        GuiDrawText("Operation has no parameters!", GetTextBounds(LABEL, aabb2_ray(r)), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(RAYWHITE, guiAlpha));
+        GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_LEFT);
+        return;
+    }
+    
     Rectangle dims = aabb2_ray(r);
     
     zpl_aabb2 column_1_r = zpl_aabb2_cut_left(&r, dims.width/2.0f);
@@ -349,24 +356,23 @@ void texed_draw_props_pane(zpl_aabb2 r) {
         
         GuiDrawText(zpl_bprintf("%s: ", p->name ? p->name : "prop"), GetTextBounds(LABEL, aabb2_ray(label_r)), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(RAYWHITE, guiAlpha));
         
-        static bool is_color_editing = false;
-        if (is_color_editing) GuiLock();
-        
         switch (p->kind) {
             case TPARAM_COLOR: {
-                if (is_color_editing) GuiUnlock();
                 if (GuiTextBoxEx(aabb2_ray(tbox_r), p->str, 1000, p->edit_mode)) {
                     p->edit_mode = true;
-                    is_color_editing = true;
                 }
                 
                 if (p->edit_mode) {
                     zpl_aabb2 extra_r = zpl_aabb2_cut_top(c, prop_height*4.0f + 50.0f);
+                    zpl_aabb2 area_r = extra_r;
+                    area_r.min.x += aabb2_ray(label_r).width - 25.0f;
+                    area_r.min.y -= 30.0f;
+                    area_r.max.x += 55.0f;
+#if 0
+                    DrawRectangleRec(aabb2_ray(area_r), WHITE);
+#endif
                     zpl_aabb2_cut_bottom(&extra_r, 50.0f);
                     zpl_aabb2_cut_left(&extra_r, dims.width/6.0f);
-                    DrawRectangleRec(aabb2_ray(extra_r), GRAY);
-                    
-                    zpl_aabb2 ok_r = zpl_aabb2_cut_left(&extra_r, 50.0f);
                     p->color = GuiColorPicker(aabb2_ray(extra_r), p->color);
                     
                     if (zpl_memcompare(&p->color, &p->old_color, sizeof(p->color))) {
@@ -377,13 +383,15 @@ void texed_draw_props_pane(zpl_aabb2 r) {
                     
                     p->color = GetColor((int)zpl_str_to_u64(p->str, NULL, 16));
                     
-                    if (GuiButton(aabb2_ray(ok_r), "OK")) {
-                        GuiUnlock();
-                        p->edit_mode = false;
-                        is_color_editing = false;
+                    Vector2 mouse_p = GetMousePosition();
+                    
+                    if (!CheckCollisionPointRec(mouse_p, aabb2_ray(area_r))) {
+                        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) ||
+                            IsMouseButtonReleased(MOUSE_RIGHT_BUTTON)) {
+                            p->edit_mode = false;
+                        }
                     }
                 }
-                if (is_color_editing) GuiLock();
             }break;
             case TPARAM_SLIDER: {
                 p->flt = GuiSlider(aabb2_ray(tbox_r), NULL, zpl_bprintf("%.02f", p->flt), p->flt, 0.0f, 1.0f);
@@ -415,8 +423,6 @@ void texed_draw_props_pane(zpl_aabb2 r) {
                 }
             }break;
         };
-        
-        if (is_color_editing) GuiUnlock();
     }
 }
 
