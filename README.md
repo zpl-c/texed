@@ -25,7 +25,7 @@ zpl.texed is a cross-platform stack-based image generation tool suitable for pro
 
 **zpl.texed** runs on top of [raylib](https://raylib.com/) technologies and makes use of the [zpl](https://zpl.pw/) ecosystem alongside the **cwpack** library to provide a robust and intuitive user experience.
 
-![texed preview](https://user-images.githubusercontent.com/9026786/118796542-ff717780-b89b-11eb-85ca-e5bbd60135e0.png)
+![texed preview](https://user-images.githubusercontent.com/9026786/118902426-eb6a5c00-b915-11eb-8569-593cbc8f4980.png)
 
 ## Features
 * it's fast and cross-platform
