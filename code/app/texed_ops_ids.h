@@ -32,5 +32,7 @@ typedef enum {
     TOP_DRAW_IMAGE_INSTANCE,
     TOP_CLONE_IMAGE,
     
+    TOP_BLUR_IMAGE,
+    
     TOP_FORCE_UINT8 = UINT8_MAX
 } td_op_kind;

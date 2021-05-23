@@ -144,3 +144,54 @@ Image texed_generate_perlin(int width, int height, int offsetX, int offsetY, flo
     
     return image;
 }
+
+void texed_filter_image(Color *pixels, int32_t w, int32_t h, double *filter, int32_t filter_w, int32_t filter_h, float weight, float bias)
+{
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            int r=0, g=0, b=0, a=0;
+            for (int fy = 0; fy < filter_h; fy++) {
+                for (int fx = 0; fx < filter_w; fx++) {
+                    int img_x = (x - filter_w / 2 + fx + w) % w;
+                    int img_y = (y - filter_h / 2 + fy + h) % h;
+                    
+                    r += pixels[img_y * w + img_x].r * filter[fy*filter_w + fx];
+                    g += pixels[img_y * w + img_x].g * filter[fy*filter_w + fx];
+                    b += pixels[img_y * w + img_x].b * filter[fy*filter_w + fx];
+                    a += pixels[img_y * w + img_x].a * filter[fy*filter_w + fx];
+                }
+            }
+            
+            pixels[y * w + x].r = zpl_min(zpl_max((int32_t)(weight * r + bias), 0), 255);
+            pixels[y * w + x].g = zpl_min(zpl_max((int32_t)(weight * g + bias), 0), 255);
+            pixels[y * w + x].b = zpl_min(zpl_max((int32_t)(weight * b + bias), 0), 255);
+            pixels[y * w + x].a = zpl_min(zpl_max((int32_t)(weight * a + bias), 0), 255);
+        }
+    }
+}
+
+void texed_blur_image(Image *image, int32_t amount)
+{
+    // Security check to avoid program crash
+    if ((image->data == NULL) || (image->width == 0) || (image->height == 0)) return;
+    
+    Color *pixels = LoadImageColors(*image);
+    
+    static double filter[9] = {
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+    };
+    
+    while (amount--)
+        texed_filter_image(pixels, image->width, image->height, &filter[0], 3, 3, 1.0f/9.0f, 0.0f);
+    
+    int format = image->format;
+    RL_FREE(image->data);
+    //RL_FREE(filter);
+    
+    image->data = pixels;
+    image->format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+    
+    ImageFormat(image, format);
+}

@@ -1,4 +1,5 @@
 build
+pkg
 build.bat
 run.bat
 run_release.bat

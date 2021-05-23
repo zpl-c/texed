@@ -131,6 +131,12 @@ static td_op default_ops[] = {
             PARAM(TPARAM_INT, "grayscale?", "0"),
         }
     },{
+        OP(TOP_BLUR_IMAGE),
+        .cat = TCAT_MOD,
+        PARAMS(1) {
+            PARAM(TPARAM_COORD, "amount", "4"),
+        }
+    },{
         OP(TOP_COLOR_REPLACE),
         .cat = TCAT_MOD,
         PARAMS(2) {

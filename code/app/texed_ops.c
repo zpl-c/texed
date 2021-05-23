@@ -147,6 +147,9 @@ void texed_process_ops(void) {
                     ImageColorGrayscale(&ctx.img[ctx.img_pos]);
                 }
             }break;
+            case TOP_BLUR_IMAGE: {
+                texed_blur_image(&ctx.img[ctx.img_pos], op->params[0].u32);
+            }break;
             case TOP_COLOR_REPLACE: {
                 ImageColorReplace(&ctx.img[ctx.img_pos], op->params[0].color, op->params[1].color);
             }break;

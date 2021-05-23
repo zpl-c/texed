@@ -95,10 +95,11 @@ static char filename[200];
 int main(int argc, char **argv) {
     zpl_opts opts={0};
     zpl_opts_init(&opts, zpl_heap(), argv[0]);
-    zpl_opts_add(&opts, "td", "texed", "run texture editor", ZPL_OPTS_FLAG);
+    zpl_opts_add(&opts, "f", "file", "open project file", ZPL_OPTS_STRING);
     zpl_opts_add(&opts, "td-i", "texed-import", "convert an image to ecotex format", ZPL_OPTS_STRING);
     zpl_opts_add(&opts, "td-ec", "texed-export-cc", "export ecotex image to C header file", ZPL_OPTS_STRING);
     zpl_opts_add(&opts, "td-ep", "texed-export-png", "export ecotex image to PNG format", ZPL_OPTS_STRING);
+    zpl_opts_positional_add(&opts, "file");
     uint32_t ok = zpl_opts_compile(&opts, argc, argv);
     
     if (!ok) {
@@ -165,6 +166,19 @@ int main(int argc, char **argv) {
     SetTargetFPS(60);
     
     texed_new(TD_DEFAULT_IMG_WIDTH, TD_DEFAULT_IMG_HEIGHT);
+    
+    if (zpl_opts_has_arg(&opts, "file")) {
+        zpl_string path = zpl_opts_string(&opts, "file", "");
+        if (FileExists(zpl_bprintf("art/%s.ecotex", path))) {
+            zpl_strcpy(filename, zpl_bprintf("%s.ecotex", path));
+            ctx.filepath = filename;
+            texed_load();
+            zpl_string_free(path);
+        } else {
+            zpl_printf("provided file does not exist: %s\n", path);
+            return 1;
+        }
+    }
     
     while (1) {
         zpl_aabb2 screen = {
