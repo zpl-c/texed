@@ -240,7 +240,7 @@ void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, f
             int sy = y0<py ? 1 : -1;
             int err = dx+dy;
             while (1) {
-                bool hit = pixels[y0 * src->width + x0].r > (uint8_t)(threshold*255.0f);
+                bool hit = ColorToHSV(pixels[y0 * src->width + x0]).z > threshold;
                 if (x0 == x && y0 == y && hit) {
                     break;
                 } else if (hit) {
@@ -277,7 +277,7 @@ void texed_raytrace_sun(Image *dst, Image *src, float azimuth, float pitch, floa
             while (1) {
                 if (x0 < 0 || x0 >= src->width) break;
                 if (y0 < 0 || y0 >= src->height) break;
-                bool hit = pixels[(int)y0 * src->width + (int)x0].r > (uint8_t)(threshold*255.0f);
+                bool hit = ColorToHSV(pixels[(int)y0 * src->width + (int)x0]).z > threshold;
                 if ((int)x0 == x && (int)y0 == y && hit) {
                     break;
                 } else if (hit) {
