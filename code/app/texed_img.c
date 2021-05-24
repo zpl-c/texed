@@ -1,10 +1,11 @@
 
-void texed_img_push(int w, int h, Color color) {
+ Image *texed_img_push(int w, int h, Color color) {
     if (ctx.img_pos == TD_IMAGES_MAX_STACK)
-        return;
+        return NULL;
     
     ctx.img_pos += 1;
     ctx.img[ctx.img_pos] = GenImageColor(w, h, color);
+    return &ctx.img[ctx.img_pos];
 }
 
 void texed_img_pop(int x, int y, int w, int h, Color tint, bool drop) {

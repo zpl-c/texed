@@ -200,11 +200,20 @@ static td_op default_ops[] = {
             PARAM(TPARAM_SLIDER, "density", "1.0"),
         }
     },{
+        OP(TOP_TRACE_LAMP),
+        .cat = TCAT_RAY,
+        PARAMS(3) {
+            PARAM(TPARAM_PAD, "pos", "0.5,0.5"),
+            PARAM(TPARAM_SLIDER, "radius", "1.0"),
+            PARAM(TPARAM_SLIDER, "threshold", "0.5"),
+        }
+    },{
         OP(TOP_TRACE_SUN),
         .cat = TCAT_RAY,
-        PARAMS(2) {
+        PARAMS(3) {
             PARAM(TPARAM_SLIDER, "azimuth", "0.25"),
-            PARAM(TPARAM_SLIDER, "elevation", "0.5"),
+            PARAM(TPARAM_SLIDER, "pitch", "0.25"),
+            PARAM(TPARAM_SLIDER, "threshold", "0.5"),
         }
     }
 };

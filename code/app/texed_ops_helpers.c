@@ -1,3 +1,5 @@
+#include "raymath.h"
+
 float texed_map_value(float v, float min, float max) {
     float slope = max-min;
     return min + zpl_round(slope * v);
@@ -215,4 +217,42 @@ void texed_draw_line(Image *dst, int x0, int y0, int x1, int y1, Color color) {
             y0 += sy;
         }
     }
+}
+
+void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, float threshold) {
+    float max_dist = Vector2LengthSqr((Vector2){dst->width, dst->height}) * radius;
+    Color *pixels = LoadImageColors(*src);
+    
+    for (int y = 0; y < dst->height; y++) {
+        for (int x = 0; x < dst->width; x++) {
+            if (Vector2LengthSqr(Vector2Subtract((Vector2){px, py}, (Vector2){x, y})) > max_dist)
+                continue;
+            int x0 = x;
+            int y0 = y;
+            int dx = (int)abs(px-x0);
+            int sx = x0<px ? 1 : -1;
+            int dy = (int)-abs(py-y0);
+            int sy = y0<py ? 1 : -1;
+            int err = dx+dy;
+            while (1) {
+                if (pixels[y0 * src->width + x0].r > (uint8_t)(threshold*255.0f) && 
+                    (x0 != x && y0 != y)) {
+                    ImageDrawPixel(dst, x, y, WHITE);
+                    break;
+                }
+                if (x0 == px && y0 == py) break;
+                int e2 = 2*err;
+                if (e2 >= dy) {
+                    err += dy;
+                    x0 += sx;
+                } 
+                if (e2 <= dx) {
+                    err += dx;
+                    y0 += sy;
+                }
+            }
+        }
+    }
+    
+    RL_FREE(pixels);
 }

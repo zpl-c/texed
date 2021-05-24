@@ -13,7 +13,7 @@ void texed_msgbox_init(char const *title, char const *message, char const *butto
 void texed_process_ops(void);
 void texed_process_params(void);
 
-void texed_img_push(int w, int h, Color color);
+Image *texed_img_push(int w, int h, Color color);
 void texed_img_pop(int x, int y, int w, int h, Color tint, bool drop);
 
 void texed_add_op(int kind);

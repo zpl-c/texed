@@ -13,7 +13,6 @@ void texed_process_ops(void) {
         int iw = ctx.img[ctx.img_pos].width;
         int ih = ctx.img[ctx.img_pos].height;
         Image *ip = &ctx.img[ctx.img_pos];
-        
         switch (op->kind) {
             case TOP_PUSH_IMAGE:
             case TOP_NEW_IMAGE: {
@@ -43,8 +42,7 @@ void texed_process_ops(void) {
             }break;
             case TOP_CLONE_IMAGE: {
                 Image *oi = ip;
-                texed_img_push(oi->width, oi->height, BLANK);
-                Image *di = ip;
+                Image *di = texed_img_push(oi->width, oi->height, BLANK);
                 Rectangle rec = {0, 0, oi->width, oi->height};
                 ImageDraw(di, *oi, rec, rec, op->params[0].color);
             }break;
@@ -246,6 +244,18 @@ void texed_process_ops(void) {
                 ImageDraw(dst, img, rec, rec, WHITE);
                 UnloadImage(img);
             }break;
+            case TOP_TRACE_LAMP: {
+                if (ctx.img_pos < 1) break;
+                Image *dst = texed_img_push(iw, ih, BLANK);
+                texed_raytrace_lamp(dst, &ctx.img[ctx.img_pos-1],
+                                    op->params[0].vec.x*iw,
+                                    op->params[0].vec.y*ih,
+                                    op->params[1].flt,
+                                    op->params[2].flt);
+                UnloadImage(ctx.img[ctx.img_pos-1]);
+                ctx.img[ctx.img_pos-1] = *dst;
+                ctx.img_pos--;
+            }break;
             default: {
                 zpl_printf("unsupported op: %s!\n", op->name);
             }break;
@@ -260,7 +270,7 @@ void texed_process_params(void) {
         td_op *op = &ctx.ops[i];
         
         for (int j = 0; j < op->num_params; j += 1) {
-            td_param *p = &op->params[j];
+            td_param  *p = &op->params[j];
             
             switch (p->kind) {
                 case TPARAM_SLIDER:
