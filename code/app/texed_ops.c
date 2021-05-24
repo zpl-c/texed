@@ -19,6 +19,10 @@ void texed_process_ops(void) {
                 texed_img_push(op->params[0].i32, op->params[1].i32, op->params[2].color);
             }break;
             case TOP_POP_IMAGE: {
+                if (ctx.img_pos > 0) {
+                    iw = ctx.img[ctx.img_pos-1].width;
+                    ih = ctx.img[ctx.img_pos-1].height;
+                }
                 texed_img_pop(op->params[0].vec.x*iw,
                               op->params[0].vec.y*ih,
                               op->params[1].i32,
@@ -27,6 +31,10 @@ void texed_process_ops(void) {
                               true);
             }break;
             case TOP_DRAW_IMAGE_INSTANCE: {
+                if (ctx.img_pos > 0) {
+                    iw = ctx.img[ctx.img_pos-1].width;
+                    ih = ctx.img[ctx.img_pos-1].height;
+                }
                 texed_img_pop(op->params[0].vec.x*iw,
                               op->params[0].vec.y*ih,
                               op->params[1].i32,
@@ -261,7 +269,7 @@ void texed_process_ops(void) {
                 Image *dst = texed_img_push(iw, ih, BLANK);
                 texed_raytrace_sun(dst, &ctx.img[ctx.img_pos-1],
                                    texed_map_value_flt(op->params[0].flt, 0.0f, ZPL_TAU),
-                                   op->params[1].flt,
+                                   texed_map_value_flt(op->params[1].flt, 0.0f, 0.5f),
                                    op->params[2].flt);
                 UnloadImage(ctx.img[ctx.img_pos-1]);
                 ctx.img[ctx.img_pos-1] = *dst;
