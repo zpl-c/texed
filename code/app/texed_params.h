@@ -7,6 +7,7 @@ typedef enum {
     TPARAM_COLOR,
     TPARAM_STRING,
     TPARAM_SLIDER,
+    TPARAM_PAD,
     
     TPARAM_FORCE_UINT8 = UINT8_MAX
 } td_param_kind;
@@ -26,6 +27,9 @@ typedef struct {
         struct {
             Color color, old_color;
         };
+        struct {
+            Vector2 vec, old_vec;
+        };
         char copy[4];
     };
 } td_param;
@@ -35,6 +39,7 @@ typedef enum {
     TCAT_GEN,
     TCAT_DRAW,
     TCAT_MOD,
+    TCAT_RAY,
     
     TCAT_FORCE_UINT8 = UINT8_MAX
 } tcat_kind;

@@ -9,7 +9,10 @@ void texed_process_ops(void) {
     for (int i = 0; i < zpl_array_count(ctx.ops); i += 1) {
         td_op *op = &ctx.ops[i];
         if (op->is_hidden) continue;
-        //zpl_printf("processing op: %s ... \n", op->name);
+        
+        int iw = ctx.img[ctx.img_pos].width;
+        int ih = ctx.img[ctx.img_pos].height;
+        Image *ip = &ctx.img[ctx.img_pos];
         
         switch (op->kind) {
             case TOP_PUSH_IMAGE:
@@ -17,19 +20,19 @@ void texed_process_ops(void) {
                 texed_img_push(op->params[0].i32, op->params[1].i32, op->params[2].color);
             }break;
             case TOP_POP_IMAGE: {
-                texed_img_pop(op->params[0].i32,
+                texed_img_pop(op->params[0].vec.x*iw,
+                              op->params[0].vec.y*ih,
                               op->params[1].i32,
                               op->params[2].i32,
-                              op->params[3].i32,
-                              op->params[4].color,
+                              op->params[3].color,
                               true);
             }break;
             case TOP_DRAW_IMAGE_INSTANCE: {
-                texed_img_pop(op->params[0].i32,
+                texed_img_pop(op->params[0].vec.x*iw,
+                              op->params[0].vec.y*ih,
                               op->params[1].i32,
                               op->params[2].i32,
-                              op->params[3].i32,
-                              op->params[4].color,
+                              op->params[3].color,
                               false);
             }break;
             case TOP_DROP_IMAGE: {
@@ -39,41 +42,43 @@ void texed_process_ops(void) {
                 }
             }break;
             case TOP_CLONE_IMAGE: {
-                Image *oi = &ctx.img[ctx.img_pos];
+                Image *oi = ip;
                 texed_img_push(oi->width, oi->height, BLANK);
-                Image *di = &ctx.img[ctx.img_pos];
+                Image *di = ip;
                 Rectangle rec = {0, 0, oi->width, oi->height};
                 ImageDraw(di, *oi, rec, rec, op->params[0].color);
             }break;
             case TOP_IMAGE_ALPHA_MASK: {
                 if (ctx.img_pos == 0) break;
                 
-                Image *oi = &ctx.img[ctx.img_pos];
+                Image *oi = ip;
                 Image *di = &ctx.img[ctx.img_pos-1];
                 ImageAlphaMask(di, *oi);
                 ctx.img_pos--;
             }break;
             case TOP_IMAGE_ALPHA_MASK_CLEAR: {
-                ImageAlphaClear(&ctx.img[ctx.img_pos], op->params[0].color, op->params[1].flt);
+                ImageAlphaClear(ip, op->params[0].color, op->params[1].flt);
             }break;
             case TOP_DRAW_RECT: {
-                ImageDrawRectangle(&ctx.img[ctx.img_pos], 
-                                   op->params[0].i32,
-                                   op->params[1].i32,
-                                   op->params[2].i32,
-                                   op->params[3].i32,
-                                   op->params[4].color);
+                int px = (int)(op->params[0].vec.x*iw);
+                int py = (int)(op->params[0].vec.y*ih);
+                ImageDrawRectangle(ip, 
+                                   px,
+                                   py,
+                                   op->params[1].vec.x*iw - px,
+                                   op->params[1].vec.y*ih - py,
+                                   op->params[2].color);
             }break;
             case TOP_DRAW_LINE: {
-                ImageDrawLine(&ctx.img[ctx.img_pos], 
-                              op->params[0].i32,
-                              op->params[1].i32,
-                              op->params[2].i32,
-                              op->params[3].i32,
-                              op->params[4].color);
+                texed_draw_line(ip, 
+                                op->params[0].vec.x*iw,
+                                op->params[0].vec.y*ih,
+                                op->params[1].vec.x*iw,
+                                op->params[1].vec.y*ih,
+                                op->params[2].color);
             }break;
             case TOP_DITHER: {
-                ImageDither(&ctx.img[ctx.img_pos],
+                ImageDither(ip,
                             op->params[0].i32,
                             op->params[1].i32,
                             op->params[2].i32,
@@ -83,10 +88,10 @@ void texed_process_ops(void) {
                 char const *str = zpl_bprintf("art/%s", op->params[0].str);
                 if (FileExists(str)) {
                     Image img = LoadImage(str);
-                    int x = op->params[1].i32;
-                    int y = op->params[2].i32;
-                    int w = op->params[3].i32;
-                    int h = op->params[4].i32;
+                    int x = (int)(op->params[1].vec.x*iw);
+                    int y = (int)(op->params[1].vec.y*ih);
+                    int w = op->params[2].i32;
+                    int h = op->params[3].i32;
                     int flip = op->params[5].i32;
                     int rotate = op->params[6].i32;
                     
@@ -106,10 +111,10 @@ void texed_process_ops(void) {
                         ImageRotateCCW(&img);
                     }
                     
-                    ImageDraw(&ctx.img[ctx.img_pos], img, 
+                    ImageDraw(ip, img, 
                               (Rectangle){0.0f, 0.0f, img.width, img.height},
                               (Rectangle){x, y, img.width, img.height},
-                              op->params[5].color);
+                              op->params[4].color);
                     
                     UnloadImage(img);
                 } else {
@@ -118,11 +123,11 @@ void texed_process_ops(void) {
             }break;
             case TOP_DRAW_TEXT: {
                 char const *str = op->params[0].str;
-                int x = op->params[1].i32;
-                int y = op->params[2].i32;
-                int size = op->params[3].i32;
-                Color color = op->params[4].color;
-                ImageDrawText(&ctx.img[ctx.img_pos], str, x, y, size, color);
+                int x = op->params[1].vec.x*iw;
+                int y = op->params[1].vec.y*ih;
+                int size = op->params[2].i32;
+                Color color = op->params[3].color;
+                ImageDrawText(ip, str, x, y, size, color);
             }break;
             case TOP_RESIZE_IMAGE: {
                 if (ctx.img[ctx.img_pos].width == 0) break;
@@ -130,31 +135,31 @@ void texed_process_ops(void) {
                 int h = op->params[1].i32;
                 int mode = op->params[2].i32;
                 if (mode) {
-                    ImageResize(&ctx.img[ctx.img_pos], w, h);
+                    ImageResize(ip, w, h);
                 } else {
-                    ImageResizeNN(&ctx.img[ctx.img_pos], w, h);
+                    ImageResizeNN(ip, w, h);
                 }
             }break;
             case TOP_COLOR_TWEAKS: {
-                ImageColorContrast(&ctx.img[ctx.img_pos], texed_map_value(op->params[0].flt, -100.0f, 100.0f));
-                ImageColorBrightness(&ctx.img[ctx.img_pos], (int)texed_map_value(op->params[1].flt, -255.0f, 255.0f));
-                ImageColorTint(&ctx.img[ctx.img_pos], op->params[2].color);
+                ImageColorContrast(ip, texed_map_value(op->params[0].flt, -100.0f, 100.0f));
+                ImageColorBrightness(ip, (int)texed_map_value(op->params[1].flt, -255.0f, 255.0f));
+                ImageColorTint(ip, op->params[2].color);
                 
                 if (op->params[3].i32) {
-                    ImageColorInvert(&ctx.img[ctx.img_pos]);
+                    ImageColorInvert(ip);
                 }
                 if (op->params[4].i32) {
-                    ImageColorGrayscale(&ctx.img[ctx.img_pos]);
+                    ImageColorGrayscale(ip);
                 }
             }break;
             case TOP_BLUR_IMAGE: {
-                texed_blur_image(&ctx.img[ctx.img_pos], op->params[0].u32);
+                texed_blur_image(ip, op->params[0].u32);
             }break;
             case TOP_COLOR_REPLACE: {
-                ImageColorReplace(&ctx.img[ctx.img_pos], op->params[0].color, op->params[1].color);
+                ImageColorReplace(ip, op->params[0].color, op->params[1].color);
             }break;
             case TOP_IMAGE_GRAD_V: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = GenImageGradientV(w, h, op->params[0].color, op->params[1].color);
@@ -163,7 +168,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_GRAD_H: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = GenImageGradientH(w, h, op->params[0].color, op->params[1].color);
@@ -172,7 +177,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_GRAD_RAD: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = GenImageGradientRadial(w, h, 
@@ -184,7 +189,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_CHECKED: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = GenImageChecked(w, h, 
@@ -197,7 +202,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_NOISE_WHITE: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = texed_generate_noise(op->params[0].u32, 
@@ -210,7 +215,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_NOISE_PERLIN: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = texed_generate_perlin(w, h, 
@@ -227,7 +232,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             case TOP_IMAGE_CELLULAR: {
-                Image *dst = &ctx.img[ctx.img_pos];
+                Image *dst = ip;
                 int w = dst->width;
                 int h = dst->height;
                 Image img = texed_generate_cellular(op->params[0].u32,
@@ -242,7 +247,7 @@ void texed_process_ops(void) {
                 UnloadImage(img);
             }break;
             default: {
-                zpl_printf("unsupported op: %s\n!", op->name);
+                zpl_printf("unsupported op: %s!\n", op->name);
             }break;
         }
         
@@ -269,6 +274,11 @@ void texed_process_params(void) {
                 case TPARAM_COLOR: {
                     uint32_t color = (uint32_t)zpl_str_to_u64(p->str, NULL, 16);
                     p->old_color = p->color = GetColor(color);
+                }break;
+                case TPARAM_PAD: {
+                    char *str = NULL;
+                    p->vec.x = zpl_str_to_f32(p->str, &str);
+                    p->vec.y = zpl_str_to_f32(str+1, NULL);
                 }break;
                 case TPARAM_STRING: {
                     // NOTE(zaklaus): no-op

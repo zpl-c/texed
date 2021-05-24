@@ -24,9 +24,8 @@ static td_op default_ops[] = {
     },{
         OP(TOP_POP_IMAGE),
         .cat = TCAT_STACK,
-        PARAMS(5) {
-            PARAM(TPARAM_COORD, "x", "0"),
-            PARAM(TPARAM_COORD, "y", "0"),
+        PARAMS(4) {
+            PARAM(TPARAM_PAD, "pos", "0,0"),
             PARAM(TPARAM_COORD, "w", "0"),
             PARAM(TPARAM_COORD, "h", "0"),
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
@@ -53,30 +52,25 @@ static td_op default_ops[] = {
     },{
         OP(TOP_DRAW_RECT),
         .cat = TCAT_DRAW,
-        PARAMS(5) {
-            PARAM(TPARAM_COORD, "x", "0"),
-            PARAM(TPARAM_COORD, "y", "0"),
-            PARAM(TPARAM_COORD, "w", "10"),
-            PARAM(TPARAM_COORD, "h", "10"),
+        PARAMS(3) {
+            PARAM(TPARAM_PAD, "p1", "0,0"),
+            PARAM(TPARAM_PAD, "p2", "0.1,0.1"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_DRAW_LINE),
         .cat = TCAT_DRAW,
-        PARAMS(5) {
-            PARAM(TPARAM_COORD, "x1", "0"),
-            PARAM(TPARAM_COORD, "y1", "0"),
-            PARAM(TPARAM_COORD, "x2", "64"),
-            PARAM(TPARAM_COORD, "y2", "64"),
+        PARAMS(3) {
+            PARAM(TPARAM_PAD, "p1", "0,0"),
+            PARAM(TPARAM_PAD, "p2", "1,1"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
         }
     },{
         OP(TOP_DRAW_IMAGE),
         .cat = TCAT_DRAW,
-        PARAMS(8) {
+        PARAMS(7) {
             PARAM(TPARAM_STRING, "src", "samples/test.png"),
-            PARAM(TPARAM_COORD, "x", "0"),
-            PARAM(TPARAM_COORD, "y", "0"),
+            PARAM(TPARAM_PAD, "pos", "0,0"),
             PARAM(TPARAM_COORD, "w", "0"),
             PARAM(TPARAM_COORD, "h", "0"),
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
@@ -86,9 +80,8 @@ static td_op default_ops[] = {
     },{
         OP(TOP_DRAW_IMAGE_INSTANCE),
         .cat = TCAT_DRAW,
-        PARAMS(5) {
-            PARAM(TPARAM_COORD, "x", "0"),
-            PARAM(TPARAM_COORD, "y", "0"),
+        PARAMS(4) {
+            PARAM(TPARAM_PAD, "pos", "0,0"),
             PARAM(TPARAM_COORD, "w", "0"),
             PARAM(TPARAM_COORD, "h", "0"),
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
@@ -96,10 +89,9 @@ static td_op default_ops[] = {
     },{
         OP(TOP_DRAW_TEXT),
         .cat = TCAT_DRAW,
-        PARAMS(5) {
+        PARAMS(4) {
             PARAM(TPARAM_STRING, "text", "hello world"),
-            PARAM(TPARAM_COORD, "x", "0"),
-            PARAM(TPARAM_COORD, "y", "0"),
+            PARAM(TPARAM_PAD, "pos", "0,0"),
             PARAM(TPARAM_COORD, "size", "16"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
         }
@@ -207,6 +199,13 @@ static td_op default_ops[] = {
             PARAM(TPARAM_SLIDER, "cell_offset", "0.0"),
             PARAM(TPARAM_SLIDER, "density", "1.0"),
         }
+    },{
+        OP(TOP_TRACE_SUN),
+        .cat = TCAT_RAY,
+        PARAMS(2) {
+            PARAM(TPARAM_SLIDER, "azimuth", "0.25"),
+            PARAM(TPARAM_SLIDER, "elevation", "0.5"),
+        }
     }
 };
 
@@ -217,4 +216,5 @@ static tcat_desc default_cats[] = {
     {.kind = TCAT_GEN, .icon = "#125#", .color = BLUE},
     {.kind = TCAT_DRAW, .icon = "#23#", .color = GREEN},
     {.kind = TCAT_MOD, .icon = "#25#", .color = ORANGE},
+    {.kind = TCAT_RAY, .icon = "#119#", .color = PURPLE},
 };

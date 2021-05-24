@@ -15,7 +15,6 @@ void texed_load(void) {
     
     cw_unpack_context uc;
     cw_unpack_context_init(&uc, databuf, (size_t)size, NULL);
-    
     UNPACK(CWP_ITEM_POSITIVE_INTEGER);
     assert(uc.item.as.u64 == ECOTEX_VERSION);
     

@@ -24,8 +24,8 @@
 #define TD_OP_MOD_ICON_DIM 20.0f
 #define TD_OP_LIST_ITEM_HEIGHT 25.0f
 
-static uint16_t screenWidth = 1280;
-static uint16_t screenHeight = 720;
+static uint16_t screenWidth = 1600;
+static uint16_t screenHeight = 900;
 static float zoom = TD_UI_DEFAULT_ZOOM;
 static float old_zoom = TD_UI_DEFAULT_ZOOM;
 static Texture2D checker_tex;
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
             zpl_strcpy(params[0].str, path);
             is_repaint_locked = false;
             texed_compose_image();
-            zpl_strcpy(filename, zpl_bprintf("%s.ecotex", GetFileNameWithoutExt(path)));
+            zpl_strcpy(filename, zpl_bprintf("%s", GetFileNameWithoutExt(path)));
             ctx.filepath = filename;
             texed_save();
         } else {
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
         zpl_string path = zpl_opts_string(&opts, "texed-export-cc", "");
         if (FileExists(zpl_bprintf("art/%s.ecotex", path))) {
             zpl_array_init(ctx.ops, zpl_heap());
-            zpl_strcpy(filename, zpl_bprintf("%s.ecotex", path));
+            zpl_strcpy(filename, zpl_bprintf("%s", path));
             ctx.filepath = filename;
             texed_load();
             texed_export_cc(path);
@@ -170,10 +170,9 @@ int main(int argc, char **argv) {
     if (zpl_opts_has_arg(&opts, "file")) {
         zpl_string path = zpl_opts_string(&opts, "file", "");
         if (FileExists(zpl_bprintf("art/%s.ecotex", path))) {
-            zpl_strcpy(filename, zpl_bprintf("%s.ecotex", path));
+            zpl_strcpy(filename, zpl_bprintf("%s", path));
             ctx.filepath = filename;
             texed_load();
-            zpl_string_free(path);
         } else {
             zpl_printf("provided file does not exist: %s\n", path);
             return 1;

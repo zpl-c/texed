@@ -2303,6 +2303,59 @@ int GuiListViewEx(Rectangle bounds, const char **text, int count, int *focus, in
     return itemSelected;
 }
 
+
+Vector2 GuiPosPad(Rectangle bounds, Vector2 pos)
+{
+    GuiControlState state = guiState;
+    Vector2 pickerSelector = { 0 };
+    
+    pickerSelector.x = bounds.x + pos.x*bounds.width;
+    pickerSelector.y = bounds.y + pos.y*bounds.height;
+    
+    // Update control
+    //--------------------------------------------------------------------
+    if ((state != GUI_STATE_DISABLED) && !guiLocked)
+    {
+        Vector2 mousePoint = GetMousePosition();
+        
+        if (CheckCollisionPointRec(mousePoint, bounds))
+        {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+            {
+                state = GUI_STATE_PRESSED;
+                pickerSelector = mousePoint;
+                
+                // Calculate color from picker
+                Vector2 posPick = { pickerSelector.x - bounds.x, pickerSelector.y - bounds.y };
+                
+                posPick.x /= (float)bounds.width;     // Get normalized value on x
+                posPick.y /= (float)bounds.height;    // Get normalized value on y
+                pos = posPick;
+            }
+            else state = GUI_STATE_FOCUSED;
+        }
+    }
+    //--------------------------------------------------------------------
+    
+    // Draw control
+    //--------------------------------------------------------------------
+    if (state != GUI_STATE_DISABLED)
+    {
+        // Draw color picker: selector
+        Rectangle selector = { pickerSelector.x - GuiGetStyle(COLORPICKER, COLOR_SELECTOR_SIZE)/2, pickerSelector.y - GuiGetStyle(COLORPICKER, COLOR_SELECTOR_SIZE)/2, (float)GuiGetStyle(COLORPICKER, COLOR_SELECTOR_SIZE), (float)GuiGetStyle(COLORPICKER, COLOR_SELECTOR_SIZE) };
+        GuiDrawRectangle(selector, 0, BLANK, Fade(WHITE, guiAlpha));
+    }
+    else
+    {
+        DrawRectangleGradientEx(bounds, Fade(Fade(GetColor(GuiGetStyle(COLORPICKER, BASE_COLOR_DISABLED)), 0.1f), guiAlpha), Fade(Fade( BLACK, 0.6f), guiAlpha), Fade(Fade(BLACK, 0.6f), guiAlpha), Fade(Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER_COLOR_DISABLED)), 0.6f), guiAlpha));
+    }
+    
+    GuiDrawRectangle(bounds, 1, Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER + state*3)), guiAlpha), BLANK);
+    //--------------------------------------------------------------------
+    
+    return pos;
+}
+
 // Color Panel control
 Color GuiColorPanelEx(Rectangle bounds, Color color, float hue)
 {

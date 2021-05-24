@@ -34,5 +34,12 @@ typedef enum {
     
     TOP_BLUR_IMAGE,
     
+    TOP_TRACE_LAMP,
+    TOP_TRACE_SUN,
+    TOP_TRACE_RESERVED2,
+    TOP_TRACE_RESERVED3,
+    TOP_TRACE_RESERVED4,
+    TOP_TRACE_RESERVED5,
+    
     TOP_FORCE_UINT8 = UINT8_MAX
 } td_op_kind;

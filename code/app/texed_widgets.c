@@ -357,6 +357,43 @@ void texed_draw_props_pane(zpl_aabb2 r) {
         GuiDrawText(zpl_bprintf("%s: ", p->name ? p->name : "prop"), GetTextBounds(LABEL, aabb2_ray(label_r)), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(RAYWHITE, guiAlpha));
         
         switch (p->kind) {
+            case TPARAM_PAD: {
+                if (GuiTextBoxEx(aabb2_ray(tbox_r), p->str, 1000, p->edit_mode)) {
+                    p->edit_mode = true;
+                }
+                
+                if (p->edit_mode) {
+                    zpl_aabb2 extra_r = zpl_aabb2_cut_top(c, prop_height*4.0f + 0.0f);
+                    zpl_aabb2 area_r = extra_r;
+                    area_r.min.x += aabb2_ray(label_r).width - 25.0f;
+                    area_r.min.y -= 30.0f;
+#if 0
+                    DrawRectangleRec(aabb2_ray(area_r), WHITE);
+#endif
+                    //zpl_aabb2_cut_bottom(&extra_r, 20.0f);
+                    zpl_aabb2_cut_left(&extra_r, dims.width/6.0f);
+                    p->vec = GuiPosPad(aabb2_ray(extra_r), p->vec);
+                    
+                    if (zpl_memcompare(&p->vec.x, &p->old_vec.x, sizeof(p->vec))) {
+                        zpl_snprintf(p->str, 1000, "%f,%f", p->vec.x, p->vec.y);
+                        texed_repaint_preview();
+                        p->old_vec = p->vec;
+                    }
+                    
+                    char *str = NULL;
+                    p->vec.x = zpl_str_to_f32(p->str, &str);
+                    p->vec.y = zpl_str_to_f32(str+1, NULL);
+                    
+                    Vector2 mouse_p = GetMousePosition();
+                    
+                    if (!CheckCollisionPointRec(mouse_p, aabb2_ray(area_r))) {
+                        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) ||
+                            IsMouseButtonReleased(MOUSE_RIGHT_BUTTON)) {
+                            p->edit_mode = false;
+                        }
+                    }
+                }
+            }break;
             case TPARAM_COLOR: {
                 if (GuiTextBoxEx(aabb2_ray(tbox_r), p->str, 1000, p->edit_mode)) {
                     p->edit_mode = true;
