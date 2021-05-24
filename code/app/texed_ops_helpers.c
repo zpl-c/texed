@@ -5,6 +5,11 @@ float texed_map_value(float v, float min, float max) {
     return min + zpl_round(slope * v);
 }
 
+float texed_map_value_flt(float v, float min, float max) {
+    float slope = max-min;
+    return min + slope * v;
+}
+
 /* This algorithm is mentioned in the ISO C standard, here extended
    for 32 bits.  */
 int _rand_r(unsigned int *seed) {
@@ -235,8 +240,10 @@ void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, f
             int sy = y0<py ? 1 : -1;
             int err = dx+dy;
             while (1) {
-                if (pixels[y0 * src->width + x0].r > (uint8_t)(threshold*255.0f) && 
-                    (x0 != x && y0 != y)) {
+                bool hit = pixels[y0 * src->width + x0].r > (uint8_t)(threshold*255.0f);
+                if (x0 == x && y0 == y && hit) {
+                    break;
+                } else if (hit) {
                     ImageDrawPixel(dst, x, y, WHITE);
                     break;
                 }
@@ -250,6 +257,37 @@ void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, f
                     err += dx;
                     y0 += sy;
                 }
+            }
+        }
+    }
+    
+    RL_FREE(pixels);
+}
+
+
+void texed_raytrace_sun(Image *dst, Image *src, float azimuth, float pitch, float threshold) {
+    float max_dist = Vector2LengthSqr((Vector2){dst->width, dst->height}) * (pitch/2.0f);
+    Color *pixels = LoadImageColors(*src);
+    Vector2 dir = (Vector2){-cos(azimuth), -sin(azimuth)};
+    
+    for (int y = 0; y < dst->height; y++) {
+        for (int x = 0; x < dst->width; x++) {
+            float x0 = x;
+            float y0 = y;
+            while (1) {
+                if (x0 < 0 || x0 >= src->width) break;
+                if (y0 < 0 || y0 >= src->height) break;
+                bool hit = pixels[(int)y0 * src->width + (int)x0].r > (uint8_t)(threshold*255.0f);
+                if ((int)x0 == x && (int)y0 == y && hit) {
+                    break;
+                } else if (hit) {
+                    ImageDrawPixel(dst, x, y, WHITE);
+                    break;
+                }
+                if (Vector2LengthSqr(Vector2Subtract((Vector2){x0, y0}, (Vector2){x, y})) > max_dist)
+                    break;
+                x0 += dir.x;
+                y0 += dir.y;
             }
         }
     }

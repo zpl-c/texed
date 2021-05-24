@@ -256,6 +256,17 @@ void texed_process_ops(void) {
                 ctx.img[ctx.img_pos-1] = *dst;
                 ctx.img_pos--;
             }break;
+            case TOP_TRACE_SUN: {
+                if (ctx.img_pos < 1) break;
+                Image *dst = texed_img_push(iw, ih, BLANK);
+                texed_raytrace_sun(dst, &ctx.img[ctx.img_pos-1],
+                                   texed_map_value_flt(op->params[0].flt, 0.0f, ZPL_TAU),
+                                   op->params[1].flt,
+                                   op->params[2].flt);
+                UnloadImage(ctx.img[ctx.img_pos-1]);
+                ctx.img[ctx.img_pos-1] = *dst;
+                ctx.img_pos--;
+            }break;
             default: {
                 zpl_printf("unsupported op: %s!\n", op->name);
             }break;
