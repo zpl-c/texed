@@ -252,8 +252,7 @@ void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, f
                 if (e2 >= dy) {
                     err += dy;
                     x0 += sx;
-                } 
-                if (e2 <= dx) {
+                } else if (e2 <= dx) {
                     err += dx;
                     y0 += sy;
                 }
@@ -266,28 +265,40 @@ void texed_raytrace_lamp(Image *dst, Image *src, int px, int py, float radius, f
 
 
 void texed_raytrace_sun(Image *dst, Image *src, float azimuth, float pitch, float threshold) {
-    float max_dist = Vector2LengthSqr((Vector2){dst->width, dst->height}) * (pitch/2.0f);
+    float max_dist = Vector2Length((Vector2){dst->width, dst->height}) * pitch;
     Color *pixels = LoadImageColors(*src);
     Vector2 dir = (Vector2){-cos(azimuth), -sin(azimuth)};
     
     for (int y = 0; y < dst->height; y++) {
         for (int x = 0; x < dst->width; x++) {
-            float x0 = x;
-            float y0 = y;
+            int px = x + (int)(dir.x*max_dist);
+            int py = y + (int)(dir.y*max_dist);
+            int x0 = x;
+            int y0 = y;
+            int sx = x0<px ? 1 : -1;
+            int sy = y0<py ? 1 : -1;
+            int dx = (int)abs(px-x0);
+            int dy = (int)-abs(py-y0);
+            int err = dx+dy;
             while (1) {
                 if (x0 < 0 || x0 >= src->width) break;
                 if (y0 < 0 || y0 >= src->height) break;
-                bool hit = ColorToHSV(pixels[(int)y0 * src->width + (int)x0]).z > threshold;
-                if ((int)x0 == x && (int)y0 == y && hit) {
+                bool hit = ColorToHSV(pixels[y0 * src->width + x0]).z > threshold;
+                if (x0 == x && y0 == y && hit) {
                     break;
                 } else if (hit) {
                     ImageDrawPixel(dst, x, y, WHITE);
                     break;
                 }
-                if (Vector2LengthSqr(Vector2Subtract((Vector2){x0, y0}, (Vector2){x, y})) > max_dist)
-                    break;
-                x0 += dir.x;
-                y0 += dir.y;
+                if (x0 == px && y0 == py) break;
+                int e2 = 2*err;
+                if (e2 >= dy) {
+                    err += dy;
+                    x0 += sx;
+                } else if (e2 <= dx) {
+                    err += dx;
+                    y0 += sy;
+                }
             }
         }
     }
