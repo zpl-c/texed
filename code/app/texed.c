@@ -6,6 +6,7 @@
 #include "cwpack/cwpack.h"
 
 #define RAYGUI_IMPLEMENTATION
+#define UI_ENHANCED_MOUSE
 #define RAYGUI_SUPPORT_ICONS
 #include "raygui.h"
 
@@ -16,7 +17,7 @@
 #include "gui_textbox_extended.h"
 
 // NOTE(zaklaus): Bump it every release
-#define TEXED_VERSION "0.2.2"
+#define TEXED_VERSION "0.3.0"
 
 #define TD_DEFAULT_IMG_WIDTH 64
 #define TD_DEFAULT_IMG_HEIGHT 64
@@ -27,8 +28,8 @@
 #define TD_OP_MOD_ICON_DIM 20.0f
 #define TD_OP_LIST_ITEM_HEIGHT 25.0f
 
-static uint16_t screenWidth = 1600;
-static uint16_t screenHeight = 900;
+static uint16_t screenWidth = 1280;
+static uint16_t screenHeight = 720;
 static float zoom = TD_UI_DEFAULT_ZOOM;
 static float old_zoom = TD_UI_DEFAULT_ZOOM;
 static Texture2D checker_tex;
@@ -224,6 +225,7 @@ int main(int argc, char **argv) {
         }
         
         BeginDrawing();
+        GuiResetFrame();
         ClearBackground(GetColor(0x222034));
         {
             if (ctx.fileDialog.fileDialogActive) GuiLock();

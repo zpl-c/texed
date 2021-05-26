@@ -69,64 +69,64 @@
 *
 *
 *   VERSIONS HISTORY:
-*       2.9 (17-Mar-2021) Removed tooltip API
-*       2.8 (03-May-2020) Centralized rectangles drawing to GuiDrawRectangle()
-*       2.7 (20-Feb-2020) Added possible tooltips API
-*       2.6 (09-Sep-2019) ADDED: GuiTextInputBox()
-*                         REDESIGNED: GuiListView*(), GuiDropdownBox(), GuiSlider*(), GuiProgressBar(), GuiMessageBox()
-*                         REVIEWED: GuiTextBox(), GuiSpinner(), GuiValueBox(), GuiLoadStyle()
-*                         Replaced property INNER_PADDING by TEXT_PADDING, renamed some properties
-*                         Added 8 new custom styles ready to use
-*                         Multiple minor tweaks and bugs corrected
-*       2.5 (28-May-2019) Implemented extended GuiTextBox(), GuiValueBox(), GuiSpinner()
-*       2.3 (29-Apr-2019) Added rIcons auxiliar library and support for it, multiple controls reviewed
-*                         Refactor all controls drawing mechanism to use control state
-*       2.2 (05-Feb-2019) Added GuiScrollBar(), GuiScrollPanel(), reviewed GuiListView(), removed Gui*Ex() controls
-*       2.1 (26-Dec-2018) Redesign of GuiCheckBox(), GuiComboBox(), GuiDropdownBox(), GuiToggleGroup() > Use combined text string
-*                         Complete redesign of style system (breaking change)
-*       2.0 (08-Nov-2018) Support controls guiLock and custom fonts, reviewed GuiComboBox(), GuiListView()...
-*       1.9 (09-Oct-2018) Controls review: GuiGrid(), GuiTextBox(), GuiTextBoxMulti(), GuiValueBox()...
-*       1.8 (01-May-2018) Lot of rework and redesign to align with rGuiStyler and rGuiLayout
-*       1.5 (21-Jun-2017) Working in an improved styles system
-*       1.4 (15-Jun-2017) Rewritten all GUI functions (removed useless ones)
-*       1.3 (12-Jun-2017) Redesigned styles system
-*       1.1 (01-Jun-2017) Complete review of the library
-*       1.0 (07-Jun-2016) Converted to header-only by Ramon Santamaria.
-*       0.9 (07-Mar-2016) Reviewed and tested by Albert Martos, Ian Eito, Sergio Martinez and Ramon Santamaria.
-*       0.8 (27-Aug-2015) Initial release. Implemented by Kevin Gato, Daniel Nicolás and Ramon Santamaria.
-*
-*   CONTRIBUTORS:
-*       Ramon Santamaria:   Supervision, review, redesign, update and maintenance...
-*       Vlad Adrian:        Complete rewrite of GuiTextBox() to support extended features (2019)
-*       Sergio Martinez:    Review, testing (2015) and redesign of multiple controls (2018)
-*       Adria Arranz:       Testing and Implementation of additional controls (2018)
-*       Jordi Jorba:        Testing and Implementation of additional controls (2018)
-*       Albert Martos:      Review and testing of the library (2015)
-*       Ian Eito:           Review and testing of the library (2015)
-*       Kevin Gato:         Initial implementation of basic components (2014)
-*       Daniel Nicolas:     Initial implementation of basic components (2014)
-*
-*
-*   LICENSE: zlib/libpng
-*
-*   Copyright (c) 2014-2020 Ramon Santamaria (@raysan5)
-*
-*   This software is provided "as-is", without any express or implied warranty. In no event
-*   will the authors be held liable for any damages arising from the use of this software.
-*
-*   Permission is granted to anyone to use this software for any purpose, including commercial
-*   applications, and to alter it and redistribute it freely, subject to the following restrictions:
-*
-*     1. The origin of this software must not be misrepresented; you must not claim that you
-*     wrote the original software. If you use this software in a product, an acknowledgment
-*     in the product documentation would be appreciated but is not required.
-*
-*     2. Altered source versions must be plainly marked as such, and must not be misrepresented
-*     as being the original software.
-*
-*     3. This notice may not be removed or altered from any source distribution.
-*
-**********************************************************************************************/
+    *       2.9 (17-Mar-2021) Removed tooltip API
+    *       2.8 (03-May-2020) Centralized rectangles drawing to GuiDrawRectangle()
+    *       2.7 (20-Feb-2020) Added possible tooltips API
+    *       2.6 (09-Sep-2019) ADDED: GuiTextInputBox()
+    *                         REDESIGNED: GuiListView*(), GuiDropdownBox(), GuiSlider*(), GuiProgressBar(), GuiMessageBox()
+    *                         REVIEWED: GuiTextBox(), GuiSpinner(), GuiValueBox(), GuiLoadStyle()
+    *                         Replaced property INNER_PADDING by TEXT_PADDING, renamed some properties
+    *                         Added 8 new custom styles ready to use
+    *                         Multiple minor tweaks and bugs corrected
+    *       2.5 (28-May-2019) Implemented extended GuiTextBox(), GuiValueBox(), GuiSpinner()
+    *       2.3 (29-Apr-2019) Added rIcons auxiliar library and support for it, multiple controls reviewed
+    *                         Refactor all controls drawing mechanism to use control state
+    *       2.2 (05-Feb-2019) Added GuiScrollBar(), GuiScrollPanel(), reviewed GuiListView(), removed Gui*Ex() controls
+    *       2.1 (26-Dec-2018) Redesign of GuiCheckBox(), GuiComboBox(), GuiDropdownBox(), GuiToggleGroup() > Use combined text string
+    *                         Complete redesign of style system (breaking change)
+    *       2.0 (08-Nov-2018) Support controls guiLock and custom fonts, reviewed GuiComboBox(), GuiListView()...
+    *       1.9 (09-Oct-2018) Controls review: GuiGrid(), GuiTextBox(), GuiTextBoxMulti(), GuiValueBox()...
+    *       1.8 (01-May-2018) Lot of rework and redesign to align with rGuiStyler and rGuiLayout
+    *       1.5 (21-Jun-2017) Working in an improved styles system
+    *       1.4 (15-Jun-2017) Rewritten all GUI functions (removed useless ones)
+    *       1.3 (12-Jun-2017) Redesigned styles system
+    *       1.1 (01-Jun-2017) Complete review of the library
+    *       1.0 (07-Jun-2016) Converted to header-only by Ramon Santamaria.
+    *       0.9 (07-Mar-2016) Reviewed and tested by Albert Martos, Ian Eito, Sergio Martinez and Ramon Santamaria.
+    *       0.8 (27-Aug-2015) Initial release. Implemented by Kevin Gato, Daniel Nicolás and Ramon Santamaria.
+    *
+    *   CONTRIBUTORS:
+    *       Ramon Santamaria:   Supervision, review, redesign, update and maintenance...
+    *       Vlad Adrian:        Complete rewrite of GuiTextBox() to support extended features (2019)
+    *       Sergio Martinez:    Review, testing (2015) and redesign of multiple controls (2018)
+    *       Adria Arranz:       Testing and Implementation of additional controls (2018)
+    *       Jordi Jorba:        Testing and Implementation of additional controls (2018)
+    *       Albert Martos:      Review and testing of the library (2015)
+    *       Ian Eito:           Review and testing of the library (2015)
+    *       Kevin Gato:         Initial implementation of basic components (2014)
+    *       Daniel Nicolas:     Initial implementation of basic components (2014)
+    *
+    *
+    *   LICENSE: zlib/libpng
+    *
+    *   Copyright (c) 2014-2020 Ramon Santamaria (@raysan5)
+    *
+    *   This software is provided "as-is", without any express or implied warranty. In no event
+    *   will the authors be held liable for any damages arising from the use of this software.
+    *
+    *   Permission is granted to anyone to use this software for any purpose, including commercial
+    *   applications, and to alter it and redistribute it freely, subject to the following restrictions:
+    *
+    *     1. The origin of this software must not be misrepresented; you must not claim that you
+    *     wrote the original software. If you use this software in a product, an acknowledgment
+    *     in the product documentation would be appreciated but is not required.
+    *
+    *     2. Altered source versions must be plainly marked as such, and must not be misrepresented
+    *     as being the original software.
+    *
+    *     3. This notice may not be removed or altered from any source distribution.
+    *
+    **********************************************************************************************/
 
 #ifndef RAYGUI_H
 #define RAYGUI_H
@@ -174,6 +174,8 @@
 #define NUM_PROPS_EXTENDED               8      // Number of extended properties
 
 #define TEXTEDIT_CURSOR_BLINK_FRAMES    20      // Text edit controls cursor blink timming
+
+#define RAYGUI_CLAMP(x, a, b) (x < a) ? a : (x > b) ? b : x
 
 #if defined(__cplusplus)
 extern "C" {            // Prevents name mangling of functions
@@ -412,6 +414,9 @@ extern "C" {            // Prevents name mangling of functions
     // Module Functions Declaration
     //----------------------------------------------------------------------------------
     
+    // Resets any temporary data between frames
+    RAYGUIDEF void GuiResetFrame(void);
+    
     // State modification functions
     RAYGUIDEF void GuiEnable(void);                                         // Enable gui controls (global state)
     RAYGUIDEF void GuiDisable(void);                                        // Disable gui controls (global state)
@@ -637,9 +642,32 @@ static const char **GuiTextSplit(const char *text, int *count, int *textRow);   
 static Vector3 ConvertHSVtoRGB(Vector3 hsv);                    // Convert color data from HSV to RGB
 static Vector3 ConvertRGBtoHSV(Vector3 rgb);                    // Convert color data from RGB to HSV
 
+//~ NOTE(zaklaus): Enhanced mouse
+#ifdef UI_ENHANCED_MOUSE
+static int gui_current_id = 0;
+static int gui_active_id = -1;
+#define GRAB_ID_AND_LOCK() gui_current_id++; if (gui_active_id > 0 && gui_current_id != gui_active_id) GuiLock();
+#define IS_ACTIVE_ID() (gui_current_id == gui_active_id)
+#define SET_ACTIVE_ID() gui_active_id = gui_current_id;
+#define UNLOCK_ID() if (gui_active_id > 0 && gui_current_id != gui_active_id) GuiUnlock(); else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) gui_active_id = -1;
+#else
+#define GRAB_ID_AND_LOCK()
+#define IS_ACTIVE_ID() false
+#define SET_ACTIVE_ID()
+#define UNLOCK_ID()
+#endif
+
+
 //----------------------------------------------------------------------------------
 // Gui Setup Functions Definition
 //----------------------------------------------------------------------------------
+
+void GuiResetFrame(void) {
+#ifdef UI_ENHANCED_MOUSE
+    gui_current_id = 0;
+#endif
+}
+
 // Enable gui global state
 void GuiEnable(void) { guiState = GUI_STATE_NORMAL; }
 
@@ -957,19 +985,25 @@ bool GuiButton(Rectangle bounds, const char *text)
     GuiControlState state = guiState;
     bool pressed = false;
     
+    GRAB_ID_AND_LOCK();
+    
     // Update control
     //--------------------------------------------------------------------
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
+        bool inside = CheckCollisionPointRec(mousePoint, bounds);
         
         // Check button state
-        if (CheckCollisionPointRec(mousePoint, bounds))
+        if (inside || IS_ACTIVE_ID())
         {
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = GUI_STATE_PRESSED;
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) { 
+                state = GUI_STATE_PRESSED;
+                SET_ACTIVE_ID();
+            }
             else state = GUI_STATE_FOCUSED;
             
-            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) pressed = true;
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && inside) pressed = true;
         }
     }
     //--------------------------------------------------------------------
@@ -979,6 +1013,8 @@ bool GuiButton(Rectangle bounds, const char *text)
     GuiDrawRectangle(bounds, GuiGetStyle(BUTTON, BORDER_WIDTH), Fade(GetColor(GuiGetStyle(BUTTON, BORDER + (state*3))), guiAlpha), Fade(GetColor(GuiGetStyle(BUTTON, BASE + (state*3))), guiAlpha));
     GuiDrawText(text, GetTextBounds(BUTTON, bounds), GuiGetStyle(BUTTON, TEXT_ALIGNMENT), Fade(GetColor(GuiGetStyle(BUTTON, TEXT + (state*3))), guiAlpha));
     //------------------------------------------------------------------
+    
+    UNLOCK_ID();
     
     return pressed;
 }
@@ -1819,6 +1855,8 @@ float GuiSliderPro(Rectangle bounds, const char *textLeft, const char *textRight
 {
     GuiControlState state = guiState;
     
+    GRAB_ID_AND_LOCK();
+    
     int sliderValue = (int)(((value - minValue)/(maxValue - minValue))*(bounds.width - 2*GuiGetStyle(SLIDER, BORDER_WIDTH)));
     
     Rectangle slider = { bounds.x, bounds.y + GuiGetStyle(SLIDER, BORDER_WIDTH) + GuiGetStyle(SLIDER, SLIDER_PADDING),
@@ -1840,8 +1878,8 @@ float GuiSliderPro(Rectangle bounds, const char *textLeft, const char *textRight
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
-        
-        if (CheckCollisionPointRec(mousePoint, bounds))
+        bool inside = CheckCollisionPointRec(mousePoint, bounds);
+        if (inside || IS_ACTIVE_ID())
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
@@ -1852,6 +1890,7 @@ float GuiSliderPro(Rectangle bounds, const char *textLeft, const char *textRight
                 
                 if (sliderWidth > 0) slider.x = mousePoint.x - slider.width/2;  // Slider
                 else if (sliderWidth == 0) slider.width = (float)sliderValue;          // SliderBar
+                SET_ACTIVE_ID();
             }
             else state = GUI_STATE_FOCUSED;
         }
@@ -1903,6 +1942,8 @@ float GuiSliderPro(Rectangle bounds, const char *textLeft, const char *textRight
         GuiDrawText(textRight, textBounds, GUI_TEXT_ALIGN_LEFT, Fade(GetColor(GuiGetStyle(SLIDER, TEXT + (state*3))), guiAlpha));
     }
     //--------------------------------------------------------------------
+    
+    UNLOCK_ID();
     
     return value;
 }
@@ -2014,6 +2055,8 @@ int GuiScrollBar(Rectangle bounds, int value, int minValue, int maxValue)
 {
     GuiControlState state = guiState;
     
+    GRAB_ID_AND_LOCK();
+    
     // Is the scrollbar horizontal or vertical?
     bool isVertical = (bounds.width > bounds.height)? false : true;
     
@@ -2060,8 +2103,9 @@ int GuiScrollBar(Rectangle bounds, int value, int minValue, int maxValue)
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
+        bool inside = CheckCollisionPointRec(mousePoint, bounds);
         
-        if (CheckCollisionPointRec(mousePoint, bounds))
+        if (inside || IS_ACTIVE_ID())
         {
             state = GUI_STATE_FOCUSED;
             
@@ -2075,18 +2119,19 @@ int GuiScrollBar(Rectangle bounds, int value, int minValue, int maxValue)
                 else if (CheckCollisionPointRec(mousePoint, arrowDownRight)) value += range/GuiGetStyle(SCROLLBAR, SCROLL_SPEED);
                 
                 state = GUI_STATE_PRESSED;
+                SET_ACTIVE_ID();
             }
             else if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 if (!isVertical)
                 {
                     Rectangle scrollArea = { arrowUpLeft.x + arrowUpLeft.width, arrowUpLeft.y, scrollbar.width, bounds.height - 2*GuiGetStyle(SCROLLBAR, BORDER_WIDTH)};
-                    if (CheckCollisionPointRec(mousePoint, scrollArea)) value = (int)(((float)(mousePoint.x - scrollArea.x - slider.width/2)*range)/(scrollArea.width - slider.width) + minValue);
+                    if (CheckCollisionPointRec(mousePoint, scrollArea) || IS_ACTIVE_ID()) value = (int)(((float)(mousePoint.x - scrollArea.x - slider.width/2)*range)/(scrollArea.width - slider.width) + minValue);
                 }
                 else
                 {
                     Rectangle scrollArea = { arrowUpLeft.x, arrowUpLeft.y+arrowUpLeft.height, bounds.width - 2*GuiGetStyle(SCROLLBAR, BORDER_WIDTH),  scrollbar.height};
-                    if (CheckCollisionPointRec(mousePoint, scrollArea)) value = (int)(((float)(mousePoint.y - scrollArea.y - slider.height/2)*range)/(scrollArea.height - slider.height) + minValue);
+                    if (CheckCollisionPointRec(mousePoint, scrollArea) || IS_ACTIVE_ID()) value = (int)(((float)(mousePoint.y - scrollArea.y - slider.height/2)*range)/(scrollArea.height - slider.height) + minValue);
                 }
             }
         }
@@ -2145,6 +2190,8 @@ int GuiScrollBar(Rectangle bounds, int value, int minValue, int maxValue)
         }
     }
     //--------------------------------------------------------------------
+    
+    UNLOCK_ID();
     
     return value;
 }
@@ -2309,6 +2356,8 @@ Vector2 GuiPosPad(Rectangle bounds, Vector2 pos)
     GuiControlState state = guiState;
     Vector2 pickerSelector = { 0 };
     
+    GRAB_ID_AND_LOCK();
+    
     pickerSelector.x = bounds.x + pos.x*bounds.width;
     pickerSelector.y = bounds.y + pos.y*bounds.height;
     
@@ -2317,20 +2366,25 @@ Vector2 GuiPosPad(Rectangle bounds, Vector2 pos)
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
-        
-        if (CheckCollisionPointRec(mousePoint, bounds))
+        bool inside = CheckCollisionPointRec(mousePoint, bounds);
+        if (inside || IS_ACTIVE_ID())
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 state = GUI_STATE_PRESSED;
                 pickerSelector = mousePoint;
                 
+                pickerSelector.x = RAYGUI_CLAMP(pickerSelector.x, bounds.x, (float)bounds.width + bounds.x);
+                pickerSelector.y = RAYGUI_CLAMP(pickerSelector.y, bounds.y, (float)bounds.height + bounds.y);
+                
                 // Calculate color from picker
                 Vector2 posPick = { pickerSelector.x - bounds.x, pickerSelector.y - bounds.y };
                 
                 posPick.x /= (float)bounds.width;     // Get normalized value on x
                 posPick.y /= (float)bounds.height;    // Get normalized value on y
+                
                 pos = posPick;
+                SET_ACTIVE_ID();
             }
             else state = GUI_STATE_FOCUSED;
         }
@@ -2353,6 +2407,8 @@ Vector2 GuiPosPad(Rectangle bounds, Vector2 pos)
     GuiDrawRectangle(bounds, 1, Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER + state*3)), guiAlpha), BLANK);
     //--------------------------------------------------------------------
     
+    UNLOCK_ID();
+    
     return pos;
 }
 
@@ -2361,6 +2417,8 @@ Color GuiColorPanelEx(Rectangle bounds, Color color, float hue)
 {
     GuiControlState state = guiState;
     Vector2 pickerSelector = { 0 };
+    
+    GRAB_ID_AND_LOCK();
     
     Vector3 vcolor = { (float)color.r/255.0f, (float)color.g/255.0f, (float)color.b/255.0f };
     Vector3 hsv = ConvertRGBtoHSV(vcolor);
@@ -2382,13 +2440,16 @@ Color GuiColorPanelEx(Rectangle bounds, Color color, float hue)
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
-        
-        if (CheckCollisionPointRec(mousePoint, bounds))
+        bool inside = CheckCollisionPointRec(mousePoint, bounds);
+        if (inside || IS_ACTIVE_ID())
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 state = GUI_STATE_PRESSED;
                 pickerSelector = mousePoint;
+                
+                pickerSelector.x = RAYGUI_CLAMP(pickerSelector.x, bounds.x, (float)bounds.width + bounds.x);
+                pickerSelector.y = RAYGUI_CLAMP(pickerSelector.y, bounds.y, (float)bounds.height + bounds.y);
                 
                 // Calculate color from picker
                 Vector2 colorPick = { pickerSelector.x - bounds.x, pickerSelector.y - bounds.y };
@@ -2407,6 +2468,7 @@ Color GuiColorPanelEx(Rectangle bounds, Color color, float hue)
                     (unsigned char)(255.0f*rgb.z),
                     (unsigned char)(255.0f*(float)color.a/255.0f) };
                 
+                SET_ACTIVE_ID();
             }
             else state = GUI_STATE_FOCUSED;
         }
@@ -2432,6 +2494,8 @@ Color GuiColorPanelEx(Rectangle bounds, Color color, float hue)
     GuiDrawRectangle(bounds, 1, Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER + state*3)), guiAlpha), BLANK);
     //--------------------------------------------------------------------
     
+    UNLOCK_ID();
+    
     return color;
 }
 
@@ -2449,14 +2513,16 @@ float GuiColorBarAlpha(Rectangle bounds, float alpha)
     GuiControlState state = guiState;
     Rectangle selector = { (float)bounds.x + alpha * bounds.width - GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_HEIGHT)/2, (float)bounds.y - GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_OVERFLOW), (float)GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_HEIGHT), (float)bounds.height + GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_OVERFLOW) * 2 };
     
+    GRAB_ID_AND_LOCK();
+    
     // Update control
     //--------------------------------------------------------------------
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
-        
-        if (CheckCollisionPointRec(mousePoint, bounds) ||
-            CheckCollisionPointRec(mousePoint, selector))
+        bool inside = CheckCollisionPointRec(mousePoint, bounds) ||
+            CheckCollisionPointRec(mousePoint, selector);
+        if (inside || IS_ACTIVE_ID())
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
@@ -2466,6 +2532,7 @@ float GuiColorBarAlpha(Rectangle bounds, float alpha)
                 if (alpha <= 0.0f) alpha = 0.0f;
                 if (alpha >= 1.0f) alpha = 1.0f;
                 //selector.x = bounds.x + (int)(((alpha - 0)/(100 - 0))*(bounds.width - 2*GuiGetStyle(SLIDER, BORDER_WIDTH))) - selector.width/2;
+                SET_ACTIVE_ID();
             }
             else state = GUI_STATE_FOCUSED;
         }
@@ -2500,6 +2567,8 @@ float GuiColorBarAlpha(Rectangle bounds, float alpha)
     GuiDrawRectangle(selector, 0, BLANK, Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER + state*3)), guiAlpha));
     //--------------------------------------------------------------------
     
+    UNLOCK_ID();
+    
     return alpha;
 }
 
@@ -2510,14 +2579,16 @@ float GuiColorBarHue(Rectangle bounds, float hue)
     GuiControlState state = guiState;
     Rectangle selector = { (float)bounds.x - GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_OVERFLOW), (float)bounds.y + hue / 360.0f*bounds.height - GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_HEIGHT) / 2, (float)bounds.width + GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_OVERFLOW) * 2, (float)GuiGetStyle(COLORPICKER, HUEBAR_SELECTOR_HEIGHT) };
     
+    GRAB_ID_AND_LOCK();
+    
     // Update control
     //--------------------------------------------------------------------
     if ((state != GUI_STATE_DISABLED) && !guiLocked)
     {
         Vector2 mousePoint = GetMousePosition();
-        
-        if (CheckCollisionPointRec(mousePoint, bounds) ||
-            CheckCollisionPointRec(mousePoint, selector))
+        bool inside = CheckCollisionPointRec(mousePoint, bounds) ||
+            CheckCollisionPointRec(mousePoint, selector);
+        if (inside || IS_ACTIVE_ID())
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
@@ -2526,7 +2597,7 @@ float GuiColorBarHue(Rectangle bounds, float hue)
                 hue = (mousePoint.y - bounds.y)*360/bounds.height;
                 if (hue <= 0.0f) hue = 0.0f;
                 if (hue >= 359.0f) hue = 359.0f;
-                
+                SET_ACTIVE_ID();
             }
             else state = GUI_STATE_FOCUSED;
             
@@ -2563,6 +2634,8 @@ float GuiColorBarHue(Rectangle bounds, float hue)
     // Draw hue bar: selector
     GuiDrawRectangle(selector, 0, BLANK, Fade(GetColor(GuiGetStyle(COLORPICKER, BORDER + state*3)), guiAlpha));
     //--------------------------------------------------------------------
+    
+    UNLOCK_ID();
     
     return hue;
 }
