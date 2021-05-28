@@ -1,0 +1,50 @@
+name: Deploy on itch.io
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'App version to deploy'
+        required: true
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: $({ matrix.os })
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set version variable
+      shell: bash
+      run: |
+        VER=$(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
+        echo "VERSION=$VER >> $GITHUB_ENV"
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        
+    - name: Package
+      shell: bash
+      run: |
+        mkdir deploy
+        cp -r art deploy/
+        cp build/Release/texed* deploy/
+
+    - name: Push to itch.io
+    - uses: zaklaus/butler-publish-itchio-action@master
+      env:
+        BUTLER_CREDENTIALS: $({ secrets.BUTLER_CREDENTIALS })
+        CHANNEL: $({ matrix.os })
+        ITCH_GAME: texed
+        ITCH_USER: zaklaus
+        PACKAGE: deploy
+        VERSION: $({ env.VERSION })
