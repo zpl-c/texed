@@ -40,7 +40,7 @@ jobs:
         cp build/Release/texed* deploy/
 
     - name: Push to itch.io
-    - uses: zaklaus/butler-publish-itchio-action@master
+      uses: zaklaus/butler-publish-itchio-action@master
       env:
         BUTLER_CREDENTIALS: $({ secrets.BUTLER_CREDENTIALS })
         CHANNEL: $({ matrix.os })
