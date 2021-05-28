@@ -41,22 +41,31 @@ jobs:
         cp -r art deploy/
         cp build/Release/* deploy/
         
-    - name: Push butler (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: bash
-      run: |
-        curl -L -o butler.zip https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
-        unzip butler.zip
-        ./butler.exe -V
-        export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
-        ./butler.exe push "deploy" zaklaus/texed:win-64 --userversion $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
-        
-    - name: Push butler (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-        unzip butler.zip
-        chmod +x butler
-        ./butler -V
-        export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
-        ./butler push "deploy" zaklaus/texed:ubuntu --userversion $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: deploy_${{ matrix.os }}
+        path: deploy
+        retention-days: 1
+  push:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version
+        run: |
+          echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > .VER
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: deploy_${{ matrix.os }}
+      - name: Push win64
+        uses: zaklaus/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: ${{ matrix.os }}
+          ITCH_GAME: texed
+          ITCH_USER: zaklaus
+          PACKAGE: deploy
+          VERSION_FILE: .VER
