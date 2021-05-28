@@ -55,9 +55,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
+        id: download
         uses: actions/download-artifact@v2
         with:
           name: deploy_${{ matrix.os }}
+          path: deploy
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
       - name: Push win64
         uses: zaklaus/butler-publish-itchio-action@master
         env:
