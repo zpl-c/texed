@@ -15,14 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Set version variable
-      shell: bash
-      run: |
-        VER=$(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
-        export VER
-        echo "VERSION=$VER >> $GITHUB_ENV"
-        
+
     - name: Setup dependencies
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -56,7 +49,7 @@ jobs:
         unzip butler.zip
         ./butler.exe -V
         export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
-        ./butler.exe push "deploy" zaklaus/texed:win64 --userversion ${{ env.VER }}
+        ./butler.exe push "deploy" zaklaus/texed:win64 --userversion $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
         
     - name: Push butler (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
@@ -66,4 +59,4 @@ jobs:
         chmod +x butler
         ./butler -V
         export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
-        ./butler push "deploy" zaklaus/texed:ubuntu --userversion ${{ env.VER }}
+        ./butler push "deploy" zaklaus/texed:ubuntu --userversion $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
