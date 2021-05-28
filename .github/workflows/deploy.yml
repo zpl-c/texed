@@ -40,7 +40,7 @@ jobs:
         mkdir deploy
         cp -r art deploy/
         cp build/Release/* deploy/
-        echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > VERSION
+        echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > deploy/VERSION
         
     - name: Upload artifact
       uses: actions/upload-artifact@v2
