@@ -40,13 +40,13 @@ jobs:
         mkdir deploy
         cp -r art deploy/
         cp build/Release/* deploy/
+        echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > VERSION
         
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: deploy_${{ matrix.os }}
         path: deploy
-        retention-days: 1
   push:
     needs: [build]
     strategy:
@@ -54,11 +54,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Extract version
-        run: |
-          echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > .VER
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
@@ -71,4 +66,4 @@ jobs:
           ITCH_GAME: texed
           ITCH_USER: zaklaus
           PACKAGE: deploy
-          VERSION_FILE: .VER
+          VERSION_FILE: deploy/VERSION
