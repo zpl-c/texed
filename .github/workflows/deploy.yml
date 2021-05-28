@@ -54,6 +54,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      
       - name: Extract version
         run: |
           echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > .VER
