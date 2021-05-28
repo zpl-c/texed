@@ -1,11 +1,7 @@
 name: Deploy on itch.io
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'App version to deploy'
-        required: true
+  workflow_dispatch
 
 env:
   BUILD_TYPE: Release
