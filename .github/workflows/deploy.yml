@@ -29,7 +29,12 @@ jobs:
         sudo apt-get install gcc-multilib
         sudo apt-get install -y --no-install-recommends libglfw3 libglfw3-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev
 
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      run: cmake -B ${{github.workspace}}/build -T ClangCL -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      
     - name: Configure CMake
+      if: matrix.os != 'windows-latest'
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
