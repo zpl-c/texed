@@ -52,7 +52,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: bash
       run: |
-        curl -L -O butler.zip https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
+        curl -L -o butler.zip https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
         unzip butler.zip
         ./butler.exe -V
         export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
@@ -61,7 +61,7 @@ jobs:
     - name: Push butler (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        curl -L -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
         unzip butler.zip
         chmod +x butler
         ./butler -V
