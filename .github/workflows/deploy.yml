@@ -9,7 +9,6 @@ env:
 jobs:
   build:
     strategy:
-      max-parallel: 1
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
@@ -41,7 +40,7 @@ jobs:
       run: |
         mkdir deploy
         cp -r art deploy/
-        cp build/Release/texed* deploy/
+        cp build/Release/* deploy/
 
     - name: Push to itch.io
       uses: zaklaus/butler-publish-itchio-action@master
