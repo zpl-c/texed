@@ -31,7 +31,7 @@ jobs:
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
-      run: cmake -B ${{github.workspace}}/build -T ClangCL -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -T ClangCL
       
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
@@ -43,9 +43,9 @@ jobs:
     - name: Package
       shell: bash
       run: |
-        mkdir deploy
-        cp -r art deploy/
-        cp build/Release/* deploy/
+        mkdir ${{github.workspace}}/deploy
+        cp -r ${{github.workspace}}/art deploy/
+        cp ${{github.workspace}}/build/Release/* deploy/
 
     - name: Push to itch.io
       uses: zaklaus/butler-publish-itchio-action@master
