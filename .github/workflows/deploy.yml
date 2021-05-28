@@ -20,6 +20,7 @@ jobs:
       shell: bash
       run: |
         VER=$(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p")
+        export VER
         echo "VERSION=$VER >> $GITHUB_ENV"
         
     - name: Setup dependencies
@@ -46,13 +47,23 @@ jobs:
         mkdir deploy
         cp -r art deploy/
         cp build/Release/* deploy/
-
-    - name: Push to itch.io
-      uses: zaklaus/butler-publish-itchio-action@master
-      env:
-        BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-        CHANNEL: ${{ matrix.os }}
-        ITCH_GAME: texed
-        ITCH_USER: zaklaus
-        PACKAGE: deploy
-        VERSION: ${{ env.VERSION }}
+        
+    - name: Push butler (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        curl -L -O butler.zip https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
+        unzip butler.zip
+        ./butler.exe -V
+        export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
+        ./butler.exe push "deploy" zaklaus/texed:win64 --userversion ${{ env.VER }}
+        
+    - name: Push butler (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        curl -L -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        unzip butler.zip
+        chmod +x butler
+        ./butler -V
+        export BUTLER_API_KEY=${{ secrets.BUTLER_CREDENTIALS }}
+        ./butler push "deploy" zaklaus/texed:ubuntu --userversion ${{ env.VER }}
