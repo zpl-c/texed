@@ -1,7 +1,10 @@
 name: Deploy on itch.io
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   BUILD_TYPE: Release
