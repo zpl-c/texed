@@ -43,8 +43,8 @@ jobs:
     - name: Package
       shell: bash
       run: |
-        mkdir ${{github.workspace}}/deploy
-        cp -r ${{github.workspace}}/art deploy/
+        mkdir deploy
+        cp -r art deploy/
         cp ${{github.workspace}}/build/Release/* deploy/
 
     - name: Push to itch.io
