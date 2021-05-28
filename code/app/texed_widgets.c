@@ -137,10 +137,10 @@ void texed_draw_topbar(zpl_aabb2 r) {
     zpl_aabb2_cut_right(&prj_name_r, 15.0f);
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_RIGHT);
     GuiDrawText(zpl_bprintf("Project: %s%s", ctx.filepath ? ctx.filepath : "(unnamed)", ctx.is_saved ? "" : "*"), GetTextBounds(LABEL, aabb2_ray(prj_name_r)), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(GREEN, guiAlpha));
+    GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_LEFT);
     
     zpl_aabb2 version_r = zpl_aabb2_cut_right(&r, 50.0f);
     zpl_aabb2_cut_right(&version_r, 15.0f);
-    GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_RIGHT);
     GuiDrawText(zpl_bprintf("Version: %s", TEXED_VERSION), GetTextBounds(LABEL, aabb2_ray(version_r)), GuiGetStyle(LABEL, TEXT_ALIGNMENT), Fade(GREEN, guiAlpha));
     
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_LEFT);
