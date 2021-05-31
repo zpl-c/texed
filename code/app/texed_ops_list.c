@@ -238,6 +238,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_SLIDER, "azimuth", "0.25"),
             PARAM(TPARAM_SLIDER, "pitch", "0.25"),
             PARAM(TPARAM_SLIDER, "threshold", "0.5"),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_RAY, 0),
         }
     }
 };

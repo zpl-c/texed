@@ -47,6 +47,7 @@ typedef enum {
 typedef enum {
     TWID_COORD,
     TWID_AB,
+    TWID_RAY,
     
     TWID_FORCE_UINT8 = UINT8_MAX
 } twid_kind;

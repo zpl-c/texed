@@ -475,8 +475,6 @@ void texed_draw_props_pane(zpl_aabb2 r) {
 }
 
 void texed_gizmos_coord(float tx, float ty, td_param *p, float x, float y) {
-    x = zpl_clamp(x, tx, tx+ctx.tex.width*zoom);
-    y = zpl_clamp(y, ty, ty+ctx.tex.height*zoom);
     debug_area_status area = check_mouse_area(x-zoom*2, y-zoom*2, 2*zoom+zoom*4, 2*zoom+zoom*4);
     Color clr = RED;
     
@@ -486,18 +484,23 @@ void texed_gizmos_coord(float tx, float ty, td_param *p, float x, float y) {
         selected_gizmo_param = p;
     }
     
-    if (selected_gizmo_param == p && area == DAREA_PRESS) {
+    if (selected_gizmo_param == p && (area == DAREA_PRESS || (area == DAREA_OUTSIDE && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)))) {
         selected_gizmo_param = NULL;
+        GuiUnlock();
     }
     
     if (selected_gizmo_param == p) {
         clr = BLUE;
         Vector2 mpos = GetMousePosition();
-        x = mpos.x-zoom;
-        y = mpos.y-zoom;
+        x = mpos.x;
+        y = mpos.y;
+        x = zpl_clamp(x, tx, tx+ctx.tex.width*zoom);
+        y = zpl_clamp(y, ty, ty+ctx.tex.height*zoom);
         
-        float nx = zpl_clamp((mpos.x - tx) / (float)(ctx.tex.width*zoom), 0.0f, ctx.tex.width*zoom);
-        float ny = zpl_clamp((mpos.y - ty) / (float)(ctx.tex.height*zoom), 0.0f, ctx.tex.height*zoom);
+        float nx = zpl_clamp((x - tx) / (float)(ctx.tex.width*zoom), 0.0f, ctx.tex.width*zoom);
+        float ny = zpl_clamp((y - ty) / (float)(ctx.tex.height*zoom), 0.0f, ctx.tex.height*zoom);
+        x -= zoom;
+        y -= zoom;
         
         if (x != p->vec.x || y != p->vec.y) {
             zpl_snprintf(p->str, 1000, "%f,%f", nx, ny);
@@ -514,6 +517,7 @@ void texed_draw_gizmos(zpl_aabb2 r) {
     int ih = ctx.img[ctx.img_pos].height;
     
     Rectangle tex_rect = aabb2_ray(r);
+    BeginScissorMode(tex_rect.x, tex_rect.y, tex_rect.width, tex_rect.height);
     float tile_x = tex_rect.x + zpl_max(0.0f, tex_rect.width/2.0f - (ctx.tex.width*zoom)/2.0f);
     float tile_y = tex_rect.y + zpl_max(0.0f, tex_rect.height/2.0f - (ctx.tex.height*zoom)/2.0f);
     
@@ -536,9 +540,21 @@ void texed_draw_gizmos(zpl_aabb2 r) {
                 texed_gizmos_coord(tile_x, tile_y, &op->params[g->id+1], tile_x + x2, tile_y + y2);
             }break;
             
+            case TWID_RAY: {
+                float azimuth = texed_map_value_flt(op->params[g->id].flt, 0.0f, ZPL_TAU);
+                Vector2 pos = (Vector2){tile_x + (ctx.tex.width*zoom)/2.0f, tile_y + (ctx.tex.height*zoom)/2.0f };
+                Vector2 dir = (Vector2){cos(azimuth), sin(azimuth)};
+                // TODO(zaklaus): calculate actual end pos instead
+                dir = Vector2Scale(dir, ctx.tex.width*zoom*2.0f);
+                DrawLineV(pos, Vector2Add(pos, dir), WHITE); 
+                DrawRectangle(pos.x-zoom, pos.y-zoom, 2*zoom, 2*zoom, RED);
+            }break;
+            
             default: break;
         }
     }
+    
+    EndScissorMode();
 }
 
 zpl_global const char zpl__num_to_char_table[] = "0123456789"
