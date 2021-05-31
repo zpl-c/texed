@@ -308,6 +308,10 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         if (GuiButton(aabb2_ray(select_r), "#141#")) {
             ctx.selected_op = i;
             ctx.is_saved = false;
+            if (ctx.bp_op != i) {
+                ctx.bp_op = -1;
+                texed_repaint_preview();
+            }
         }
         GuiSetState(GUI_STATE_NORMAL);
         
@@ -318,6 +322,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         }
         if (GuiButton(aabb2_ray(bp_r), "#64#")) {
             ctx.bp_op = (ctx.bp_op != i) ? i : -1;
+            ctx.selected_op = i;
             texed_repaint_preview();
         }
         GuiSetStyle(BUTTON, BASE, 0x202020ff);
@@ -466,6 +471,73 @@ void texed_draw_props_pane(zpl_aabb2 r) {
                 }
             }break;
         };
+    }
+}
+
+void texed_gizmos_coord(float tx, float ty, td_param *p, float x, float y) {
+    x = zpl_clamp(x, tx, tx+ctx.tex.width*zoom);
+    y = zpl_clamp(y, ty, ty+ctx.tex.height*zoom);
+    debug_area_status area = check_mouse_area(x-zoom*2, y-zoom*2, 2*zoom+zoom*4, 2*zoom+zoom*4);
+    Color clr = RED;
+    
+    if (area == DAREA_HOVER) {
+        clr = YELLOW;
+    } else if (area == DAREA_HELD && !selected_gizmo_param) {
+        selected_gizmo_param = p;
+    }
+    
+    if (selected_gizmo_param == p && area == DAREA_PRESS) {
+        selected_gizmo_param = NULL;
+    }
+    
+    if (selected_gizmo_param == p) {
+        clr = BLUE;
+        Vector2 mpos = GetMousePosition();
+        x = mpos.x-zoom;
+        y = mpos.y-zoom;
+        
+        float nx = zpl_clamp((mpos.x - tx) / (float)(ctx.tex.width*zoom), 0.0f, ctx.tex.width*zoom);
+        float ny = zpl_clamp((mpos.y - ty) / (float)(ctx.tex.height*zoom), 0.0f, ctx.tex.height*zoom);
+        
+        if (x != p->vec.x || y != p->vec.y) {
+            zpl_snprintf(p->str, 1000, "%f,%f", nx, ny);
+            texed_repaint_preview();
+        }
+    }
+    
+    DrawRectangle(x, y, 2*zoom, 2*zoom, clr);
+}
+
+void texed_draw_gizmos(zpl_aabb2 r) {
+    td_op *op = &ctx.ops[ctx.selected_op];
+    int iw = ctx.img[ctx.img_pos].width;
+    int ih = ctx.img[ctx.img_pos].height;
+    
+    Rectangle tex_rect = aabb2_ray(r);
+    float tile_x = tex_rect.x + zpl_max(0.0f, tex_rect.width/2.0f - (ctx.tex.width*zoom)/2.0f);
+    float tile_y = tex_rect.y + zpl_max(0.0f, tex_rect.height/2.0f - (ctx.tex.height*zoom)/2.0f);
+    
+    for (int i = 0; i < op->num_gizmos; i += 1) {
+        twid_desc *g = &op->gizmos[i];
+        switch (g->kind) {
+            case TWID_COORD: {
+                float x = op->params[g->id].vec.x * iw * zoom - zoom;
+                float y = op->params[g->id].vec.y * ih * zoom - zoom;
+                texed_gizmos_coord(tile_x, tile_y, &op->params[g->id], tile_x + x, tile_y + y);
+            }break;
+            
+            case TWID_AB: {
+                float x = op->params[g->id].vec.x * iw * zoom - zoom;
+                float y = op->params[g->id].vec.y * ih * zoom - zoom;
+                float x2 = op->params[g->id+1].vec.x * iw * zoom - zoom;
+                float y2 = op->params[g->id+1].vec.y * ih * zoom - zoom;
+                DrawLine(tile_x + x + zoom, tile_y + y + zoom, tile_x + x2 + zoom, tile_y + y2 + zoom, WHITE);
+                texed_gizmos_coord(tile_x, tile_y, &op->params[g->id], tile_x + x, tile_y + y);
+                texed_gizmos_coord(tile_x, tile_y, &op->params[g->id+1], tile_x + x2, tile_y + y2);
+            }break;
+            
+            default: break;
+        }
     }
 }
 

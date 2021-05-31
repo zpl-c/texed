@@ -43,3 +43,10 @@ typedef enum {
     
     TCAT_FORCE_UINT8 = UINT8_MAX
 } tcat_kind;
+
+typedef enum {
+    TWID_COORD,
+    TWID_AB,
+    
+    TWID_FORCE_UINT8 = UINT8_MAX
+} twid_kind;

@@ -3,6 +3,9 @@
 #define PARAMS(n) .num_params = n, .params = (td_param[])
 #define PARAM_DEF_COLOR "000000ff"
 
+#define GIZMOS(n) .num_gizmos = n, .gizmos = (twid_desc[])
+#define GIZMO(k, i) { .kind = k, .id = i }
+
 static td_op default_ops[] = {
     {
         OP(TOP_NEW_IMAGE),
@@ -29,6 +32,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_COORD, "w", "0"),
             PARAM(TPARAM_COORD, "h", "0"),
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_COORD, 0)
         }
     },{
         OP(TOP_CLONE_IMAGE),
@@ -56,6 +62,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_PAD, "p1", "0,0"),
             PARAM(TPARAM_PAD, "p2", "0.1,0.1"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_AB, 0),
         }
     },{
         OP(TOP_DRAW_LINE),
@@ -64,6 +73,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_PAD, "p1", "0,0"),
             PARAM(TPARAM_PAD, "p2", "1,1"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_AB, 0),
         }
     },{
         OP(TOP_DRAW_IMAGE),
@@ -76,6 +88,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
             PARAM(TPARAM_INT, "flip?", "0"),
             PARAM(TPARAM_INT, "rotate?", "0"),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_COORD, 1),
         }
     },{
         OP(TOP_DRAW_IMAGE_INSTANCE),
@@ -85,6 +100,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_COORD, "w", "0"),
             PARAM(TPARAM_COORD, "h", "0"),
             PARAM(TPARAM_COLOR, "tint", "ffffffff"),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_COORD, 0),
         }
     },{
         OP(TOP_DRAW_TEXT),
@@ -94,6 +112,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_PAD, "pos", "0,0"),
             PARAM(TPARAM_COORD, "size", "16"),
             PARAM(TPARAM_COLOR, "color", PARAM_DEF_COLOR),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_COORD, 1),
         }
     },{
         OP(TOP_DITHER),
@@ -206,6 +227,9 @@ static td_op default_ops[] = {
             PARAM(TPARAM_PAD, "pos", "0.5,0.5"),
             PARAM(TPARAM_SLIDER, "radius", "1.0"),
             PARAM(TPARAM_SLIDER, "threshold", "0.5"),
+        },
+        GIZMOS(1) {
+            GIZMO(TWID_COORD, 0),
         }
     },{
         OP(TOP_TRACE_SUN),

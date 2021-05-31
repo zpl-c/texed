@@ -17,7 +17,7 @@
 #include "gui_textbox_extended.h"
 
 // NOTE(zaklaus): Bump it every release
-#define TEXED_VERSION "0.3.2"
+#define TEXED_VERSION "0.4.0"
 
 #define TD_DEFAULT_IMG_WIDTH 64
 #define TD_DEFAULT_IMG_HEIGHT 64
@@ -40,11 +40,18 @@ static int render_tiles = 0;
 
 #include "texed_params.h"
 
+static td_param *selected_gizmo_param = NULL;
+
 typedef struct {
     tcat_kind kind;
     char const *icon;
     Color color;
 } tcat_desc;
+
+typedef struct {
+    twid_kind kind;
+    uint8_t id;
+} twid_desc;
 
 #include "texed_ops_ids.h"
 
@@ -58,6 +65,9 @@ typedef struct {
     
     uint8_t num_params;
     td_param *params;
+    
+    uint8_t num_gizmos;
+    twid_desc *gizmos;
 } td_op;
 
 #define OP(n) .kind = n, .name = #n 
@@ -247,9 +257,12 @@ int main(int argc, char **argv) {
             DrawAABB(property_pane, GetColor(0x422060));
             DrawAABB(oplist_pane, GetColor(0x425060));
             
+            if (selected_gizmo_param) GuiLock();
             texed_draw_topbar(topbar);
             texed_draw_props_pane(property_pane);
             texed_draw_oplist_pane(oplist_pane);
+            texed_draw_gizmos(preview_window);
+            if (selected_gizmo_param) GuiUnlock();
             
             if (ctx.fileDialog.fileDialogActive) GuiUnlock();
             if (ctx.msgbox.visible) GuiUnlock();

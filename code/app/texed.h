@@ -26,3 +26,4 @@ void texed_draw_oplist_pane(zpl_aabb2 r);
 void texed_draw_props_pane(zpl_aabb2 r);
 void texed_draw_topbar(zpl_aabb2 r);
 void texed_draw_msgbox(zpl_aabb2 r);
+void texed_draw_gizmos(zpl_aabb2 r);

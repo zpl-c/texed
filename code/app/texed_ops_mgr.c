@@ -19,7 +19,9 @@ void texed_add_op(int kind) {
         .is_locked = dop->is_locked,
         .is_fixed = dop->is_fixed,
         .num_params = dop->num_params,
-        .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params)
+        .params = (td_param*)zpl_malloc(sizeof(td_param)*dop->num_params),
+        .num_gizmos = dop->num_gizmos,
+        .gizmos = dop->gizmos,
     };
     
     zpl_memcopy(op.params, dop->params, sizeof(td_param)*dop->num_params);

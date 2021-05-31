@@ -40,6 +40,8 @@ void texed_load(void) {
         int idx = texed_find_op(kind);
         op->num_params = default_ops[idx].num_params;
         op->params = zpl_malloc(sizeof(td_param)*op->num_params);
+        op->num_gizmos = default_ops[idx].num_gizmos;
+        op->gizmos = default_ops[idx].gizmos;
         int parmarrsize = (int)uc.item.as.array.size;
         for (int j = 0; j < parmarrsize; j += 1) {
             td_param *p = &op->params[j];

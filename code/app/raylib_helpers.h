@@ -57,3 +57,21 @@ Color ColorLerp(Color c1, Color c2, float t) {
     
     return (Color) {(uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a};
 }
+
+typedef enum {
+    DAREA_OUTSIDE,
+    DAREA_HOVER,
+    DAREA_HELD,
+    DAREA_PRESS,
+    
+    DAREA_FORCE_UINT8 = UINT8_MAX
+} debug_area_status;
+
+debug_area_status check_mouse_area(float xpos, float ypos, float w, float h) {
+    bool is_inside = CheckCollisionPointRec(GetMousePosition(), (Rectangle){xpos, ypos, w, h});
+    
+    if (is_inside) {
+        return IsMouseButtonReleased(MOUSE_LEFT_BUTTON) ? DAREA_PRESS : IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? DAREA_HELD : DAREA_HOVER;
+    }
+    return DAREA_OUTSIDE;
+}
