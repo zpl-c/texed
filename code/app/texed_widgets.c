@@ -319,7 +319,7 @@ void texed_draw_oplist_pane(zpl_aabb2 r) {
         if (GuiButton(aabb2_ray(select_r), "#141#")) {
             ctx.selected_op = i;
             ctx.is_saved = false;
-            if (ctx.bp_op != i) {
+            if (ctx.bp_op != -1 && ctx.bp_op != i) {
                 ctx.bp_op = -1;
                 texed_repaint_preview();
             }
