@@ -10,14 +10,11 @@
 #define RAYGUI_SUPPORT_ICONS
 #include "raygui.h"
 
-#define GUI_FILE_DIALOG_IMPLEMENTATION
-#include "gui_file_dialog.h"
-
 #define GUI_TEXTBOX_EXTENDED_IMPLEMENTATION
 #include "gui_textbox_extended.h"
 
 // NOTE(zaklaus): Bump it every release
-#define TEXED_VERSION "0.4.2"
+#define TEXED_VERSION "0.4.3"
 
 #define TD_DEFAULT_IMG_WIDTH 64
 #define TD_DEFAULT_IMG_HEIGHT 64
@@ -37,6 +34,7 @@ static uint16_t old_screen_w;
 static uint16_t old_screen_h;
 static bool is_repaint_locked = false;
 static int render_tiles = 0;
+static char workdir[1000] = {0};
 
 #include "texed_params.h"
 
@@ -85,7 +83,6 @@ typedef struct {
     int32_t img_pos;
     Image img[TD_IMAGES_MAX_STACK];
     Texture2D tex;
-    GuiFileDialogState fileDialog;
     td_msgbox msgbox;
     bool is_saved;
     
@@ -106,6 +103,8 @@ static char filename[200];
 #include "texed_prj.c"
 #include "texed_widgets.c"
 
+void texed_raylib_logger(int level, char const *text, va_list args);
+
 int main(int argc, char **argv) {
     zpl_opts opts={0};
     zpl_opts_init(&opts, zpl_heap(), argv[0]);
@@ -125,6 +124,10 @@ int main(int argc, char **argv) {
     // NOTE(zaklaus): create dirs if they don't exist yet
     {
         zpl_path_mkdir_recursive("art/gen", 0660);
+        strcpy(workdir, GetWorkingDirectory());
+        zpl_printf("Texed version: %s\n", TEXED_VERSION);
+        zpl_printf("workdir: %s\n", workdir);
+        SetTraceLogCallback(texed_raylib_logger);
     }
     
     if (zpl_opts_has_arg(&opts, "texed-import")) {
@@ -218,7 +221,6 @@ int main(int argc, char **argv) {
             Image checkerboard = GenImageChecked(preview_rect.width, preview_rect.height, 16, 16, BLACK, ColorAlpha(GRAY, 0.2f));
             checker_tex = LoadTextureFromImage(checkerboard);
             UnloadImage(checkerboard);
-            ctx.fileDialog = InitGuiFileDialog(420, 310, zpl_bprintf("%s/art", GetWorkingDirectory()), false);
         }
         
         // NOTE(zaklaus): ensure we reset styling to our defaults each frame
@@ -238,7 +240,6 @@ int main(int argc, char **argv) {
         GuiResetFrame();
         ClearBackground(GetColor(0x222034));
         {
-            if (ctx.fileDialog.fileDialogActive) GuiLock();
             if (ctx.msgbox.visible) GuiLock();
             
             DrawTextureEx(checker_tex, (Vector2){ preview_window.min.x, preview_window.min.y}, 0.0f, 1.0f, WHITE);
@@ -264,10 +265,8 @@ int main(int argc, char **argv) {
             texed_draw_gizmos(preview_window);
             if (selected_gizmo_param) GuiUnlock();
             
-            if (ctx.fileDialog.fileDialogActive) GuiUnlock();
             if (ctx.msgbox.visible) GuiUnlock();
             
-            GuiFileDialog(&ctx.fileDialog);
             texed_draw_msgbox(orig_screen);
         }
         EndDrawing();
@@ -312,7 +311,6 @@ void texed_new(int32_t w, int32_t h) {
     is_repaint_locked = false;
     texed_repaint_preview();
     
-    ctx.fileDialog = InitGuiFileDialog(420, 310, zpl_bprintf("%s/art", GetWorkingDirectory()), false);
     ctx.is_saved = true;
 }
 
@@ -345,4 +343,10 @@ void texed_msgbox_init(char const *title, char const *message, char const *butto
     ctx.msgbox.title = title;
     ctx.msgbox.message = message;
     ctx.msgbox.buttons = buttons;
+}
+
+void texed_raylib_logger(int level, char const *text, va_list args) {
+    (void)level;
+    zpl_printf_va(text, args);
+    zpl_printf("%s", "\n");
 }

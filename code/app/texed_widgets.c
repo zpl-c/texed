@@ -1,3 +1,5 @@
+#include "sfd.h"
+
 static inline
 void int_to_hex_color(uint32_t color, char *text);
 static inline
@@ -10,6 +12,42 @@ bool IsCtrlAcceleratorPressed(char key);
 
 static inline
 char const *prettify_op_name(int idx);
+
+void texed_prompt_save_as(void) {
+    sfd_Options opt = {
+        .title = "Save Project",
+        .path = "art",
+        .filter_name = "Texed Project",
+        .filter = "*.ecotex",
+    };
+    
+    char const *path = sfd_save_dialog(&opt);
+    ChangeDirectory(workdir);
+    
+    if (path) {
+        strcpy(filename, GetFileNameWithoutExt(path));
+        ctx.filepath = filename;
+        texed_save();
+    }
+}
+
+void texed_prompt_load(void) {
+    sfd_Options opt = {
+        .title = "Open Project",
+        .path = "art",
+        .filter_name = "Texed Project",
+        .filter = "*.ecotex",
+    };
+    
+    char const *path = sfd_open_dialog(&opt);
+    ChangeDirectory(workdir);
+    
+    if (path) {
+        strcpy(filename, GetFileNameWithoutExt(path));
+        ctx.filepath = filename;
+        texed_load();
+    }
+}
 
 void texed_draw_topbar(zpl_aabb2 r) {
     zpl_aabb2 zoom_ctrl_r = zpl_aabb2_cut_left(&r, 150.0f);
@@ -54,41 +92,27 @@ void texed_draw_topbar(zpl_aabb2 r) {
     static bool load_pending = false;
     
     if (GuiButton(aabb2_ray(load_prj_r), "LOAD") || IsCtrlAcceleratorPressed('o')) {
-        load_pending = true;
         if (ctx.is_saved) {
-            ctx.fileDialog.fileDialogActive = true;
+            texed_prompt_load();
         } else {
+            load_pending = true;
             texed_msgbox_init("Discard unsaved work?", "You have an unsaved work! Do you want to proceed?", "OK;Cancel");
-        }
-    }
-    
-    if (ctx.fileDialog.SelectFilePressed && load_pending) {
-        ctx.fileDialog.SelectFilePressed = false;
-        if (IsFileExtension(ctx.fileDialog.fileNameText, ".ecotex")) {
-            strcpy(filename, GetFileNameWithoutExt(ctx.fileDialog.fileNameText));
-            ctx.filepath = filename;
-            load_pending = false;
-            texed_load();
-        } else {
-            ctx.fileDialog.fileDialogActive = true;
         }
     }
     
     if (load_pending && ctx.msgbox.result != -1) {
         if (ctx.msgbox.result == 1) {
-            ctx.fileDialog.fileDialogActive = true;
+            texed_prompt_load();
         }
-        else load_pending = false;
+        load_pending = false;
         ctx.msgbox.result = -1; // NOTE(zaklaus): ensure we don't re-trigger this branch next frame
     }
     
     zpl_aabb2 save_prj_r = zpl_aabb2_cut_left(&r, 60.0f);
-    static bool save_as_pending = false;
     
     if (GuiButton(aabb2_ray(save_prj_r), "SAVE") || IsCtrlAcceleratorPressed('s')) {
         if (ctx.filepath == NULL) {
-            save_as_pending = true;
-            ctx.fileDialog.fileDialogActive = true;
+            texed_prompt_save_as();
         } else {
             texed_save();
         }
@@ -97,20 +121,7 @@ void texed_draw_topbar(zpl_aabb2 r) {
     zpl_aabb2 save_as_prj_r = zpl_aabb2_cut_left(&r, 60.0f);
     
     if (GuiButton(aabb2_ray(save_as_prj_r), "SAVE AS")) {
-        save_as_pending = true;
-        ctx.fileDialog.fileDialogActive = true;
-    }
-    
-    if (ctx.fileDialog.SelectFilePressed && save_as_pending) {
-        ctx.fileDialog.SelectFilePressed = false;
-        if (TextLength(ctx.fileDialog.fileNameText)) {
-            strcpy(filename, GetFileNameWithoutExt(ctx.fileDialog.fileNameText));
-            ctx.filepath = filename;
-            save_as_pending = false;
-            texed_save();
-        } else {
-            ctx.fileDialog.fileDialogActive = true;
-        }
+        texed_prompt_save_as();
     }
     
     zpl_aabb2 split_r = zpl_aabb2_cut_left(&r, 5.0f);

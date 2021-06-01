@@ -1,6 +1,6 @@
 function(link_system_libs target_name)
     if (WIN32)
-        target_link_libraries(${target_name} winmm)
+        target_link_libraries(${target_name} winmm comdlg32)
     elseif (APPLE)
         target_link_libraries(${target_name} pthread m dl)
     elseif (UNIX)

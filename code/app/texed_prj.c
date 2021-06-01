@@ -12,6 +12,7 @@ void texed_load(void) {
     texed_clear();
     uint32_t size = 0;
     uint8_t *databuf = LoadFileData(zpl_bprintf("art/%s.ecotex", ctx.filepath), &size); 
+    assert(databuf);
     
     cw_unpack_context uc;
     cw_unpack_context_init(&uc, databuf, (size_t)size, NULL);
