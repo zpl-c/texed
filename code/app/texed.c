@@ -31,6 +31,7 @@ static float old_zoom = TD_UI_DEFAULT_ZOOM;
 static Texture2D checker_tex;
 static uint16_t old_screen_w;
 static uint16_t old_screen_h;
+static bool is_invalid_ver = false;
 static bool is_repaint_locked = false;
 static int render_tiles = 0;
 static char workdir[1000] = {0};
@@ -286,6 +287,14 @@ int main(int argc, char **argv) {
                 break;
             }
             ctx.msgbox.result = -1;
+        }
+        
+        if (is_invalid_ver && ctx.msgbox.result != -1) {
+            is_invalid_ver = false;
+            ctx.msgbox.result = -1;
+            if (zpl_array_count(ctx.ops) < 1) {
+                texed_new(TD_DEFAULT_IMG_WIDTH, TD_DEFAULT_IMG_HEIGHT);
+            }
         }
     }
     

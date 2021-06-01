@@ -523,6 +523,9 @@ void texed_gizmos_coord(float tx, float ty, td_param *p, float x, float y) {
 }
 
 void texed_draw_gizmos(zpl_aabb2 r) {
+    if (zpl_array_count(ctx.ops) < 1) {
+        return;
+    }
     td_op *op = &ctx.ops[ctx.selected_op];
     int iw = ctx.img[ctx.img_pos].width;
     int ih = ctx.img[ctx.img_pos].height;
