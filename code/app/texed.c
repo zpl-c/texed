@@ -13,7 +13,7 @@
 #include "gui_textbox_extended.h"
 
 // NOTE(zaklaus): Bump it every release
-#define TEXED_VERSION "0.4.4"
+#define TEXED_VERSION "0.4.5"
 
 #define TD_DEFAULT_IMG_WIDTH 64
 #define TD_DEFAULT_IMG_HEIGHT 64
