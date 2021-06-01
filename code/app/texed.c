@@ -1,4 +1,3 @@
-#define ZPL_NO_WINDOWS_H
 #include "zpl.h"
 
 #include "raylib.h"
