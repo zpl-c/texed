@@ -248,9 +248,9 @@ static td_op default_ops[] = {
 #define DEF_OPS_LEN (int)(sizeof(default_ops) / (sizeof(default_ops[0])))
 
 static tcat_desc default_cats[] = {
-    {.kind = TCAT_STACK, .icon = "#197#", .color = RED},
-    {.kind = TCAT_GEN, .icon = "#125#", .color = BLUE},
-    {.kind = TCAT_DRAW, .icon = "#23#", .color = GREEN},
-    {.kind = TCAT_MOD, .icon = "#25#", .color = ORANGE},
-    {.kind = TCAT_RAY, .icon = "#119#", .color = PURPLE},
+    {.kind = TCAT_STACK, .icon = "#197#", .color = { 230, 41, 55, 255 }},
+    {.kind = TCAT_GEN, .icon = "#125#", .color = { 0, 121, 241, 255 }},
+    {.kind = TCAT_DRAW, .icon = "#23#", .color = { 0, 228, 48, 255 }},
+    {.kind = TCAT_MOD, .icon = "#25#", .color = { 255, 161, 0, 255 }},
+    {.kind = TCAT_RAY, .icon = "#119#", .color = { 200, 122, 255, 255 }},
 };
