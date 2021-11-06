@@ -23,23 +23,19 @@ jobs:
         sudo apt-get install gcc-multilib
         sudo apt-get install -y --no-install-recommends libglfw3 libglfw3-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev
 
-    - name: Configure CMake (Windows)
-      if: matrix.os == 'windows-latest'
-      run: cmake -B build -T ClangCL
-      
-    - name: Configure CMake
-      if: matrix.os != 'windows-latest'
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Set up Visual Studio shell
+      if: runner.os == 'Windows'
+      uses: egor-tensin/vs-shell@v2
 
-    - name: Build
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
-        
+    - name: Configure CMake
+      run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
     - name: Package
       shell: bash
       run: |
         mkdir deploy
         cp -r art deploy/
-        cp build/Release/* deploy/
+        cp build/* deploy/
         echo $(cat code/app/texed.c | sed -nr "s/.*TEXED_VERSION\s*\"(.*)\".*/\1/p") > deploy/VERSION
         
     - name: Upload artifact
